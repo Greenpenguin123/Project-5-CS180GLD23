@@ -1,25 +1,37 @@
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Consumer {
     private String userName;
     private String cartFile;
-    private String purchaseHistroyFile;
-    private ArrayList<Product> productList = getProductList();
+    private String purchaseHistoryFile;
+    public static ArrayList<Product> productList = getProductList();
 
-    public Consumer(String userName) {
+    public Consumer(String userName)  {
         this.userName = userName;
         this.cartFile = userName + "Cart.csv";
-        this.purchaseHistroyFile = userName + "PurchaseHistory.csv";
+        this.purchaseHistoryFile = userName + "PurchaseHistory.csv";
+        if (!Files.exists(Path.of(cartFile)) && !Files.exists(Path.of(purchaseHistoryFile))) {
+            try {
+                Files.createFile(Path.of(purchaseHistoryFile));
+                Files.createFile(Path.of(cartFile));
+
+            } catch (IOException e ) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static ArrayList<Product> viewMarketPlace() {
         ArrayList<Product> products;
         products = getProductList();
-
+        int i  = 1;
         for (Product product : products) {
-            System.out.println(product);
+            System.out.println(i + ". " + product);
+            i++;
         }
         return products;
     }
@@ -84,10 +96,9 @@ public class Consumer {
         }
     }
 
-    public void removeProduct(String productName) {
+    public void removeProduct(String productName) { //removes every instance of that product
         File inputFile = new File(cartFile);
         File tempFile = new File("tempCart.csv");
-
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
              BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
 
@@ -102,25 +113,47 @@ public class Consumer {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        if (!inputFile.delete()) {
-            System.out.println("Could not delete the original file");
             return;
         }
 
-        if (!tempFile.renameTo(inputFile)) {
-            System.out.println("Could not rename the temp file to original file name");
+        // overwrite the original file with the contents of the temp file
+        try (BufferedReader tempReader = new BufferedReader(new FileReader(tempFile));
+             BufferedWriter originalWriter = new BufferedWriter(new FileWriter(inputFile))) {
+
+            String currentLine;
+            while ((currentLine = tempReader.readLine()) != null) {
+                originalWriter.write(currentLine + System.lineSeparator());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Could not overwrite the original file with the temp file contents");
+        }
+
+        if (!tempFile.delete()) {
+            System.out.println("Could not delete the temporary file");
         }
     }
+    public void printPurchaseHistory() {
+        String filePath = purchaseHistoryFile;
 
-    public ArrayList<Product> purchase() {
-        ArrayList<Product> purchasedProducts = new ArrayList<>();
-        String timeStamp = new SimpleDateFormat("MM/dd/yyyy_HH:mm").format(Calendar.getInstance().getTime());
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int lineNumber = 1;
+
+            while ((line = reader.readLine()) != null) {
+                System.out.println(lineNumber + ". " + line);
+                lineNumber++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("An error occurred while reading the file.");
+        }
+    }
+    public void purchaseProduct() {
         boolean purchaseSuccessful = true;
 
         try (BufferedReader br = new BufferedReader(new FileReader(cartFile));
-             BufferedWriter bw = new BufferedWriter(new FileWriter(purchaseHistroyFile, true))) {
+             BufferedWriter bw = new BufferedWriter(new FileWriter(purchaseHistoryFile, true))) {
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -129,28 +162,17 @@ public class Consumer {
                     String name = productDetails[0];
                     String description = productDetails[1];
                     String store = productDetails[2];
-                    double price = Double.parseDouble(productDetails[3]);
 
-                    Product purchasedProduct = findProduct(name, description, store);
-                    if (purchasedProduct != null) {
-                        if (purchasedProduct.getQuantityAvailable() >= 1) {
-                            purchasedProducts.add(purchasedProduct);
-                            System.out.println("Quantitiy1: " + purchasedProduct.getQuantityAvailable());
-                            purchasedProduct.setQuantityAvailable(purchasedProduct.getQuantityAvailable() - 1);
-                            System.out.println("Quantitiy2: " + purchasedProduct.getQuantityAvailable());
-                            purchasedProduct.incrementItemsSoldBy(1);
-
-                            bw.write(timeStamp + "," + name + "," + description + "," + store + "," + price + "," + 1 + "\n");
-                        } else {
-                            System.out.println("Not enough stock for " + name + ". Available: " + purchasedProduct.getQuantityAvailable() + ", Requested: " + 1);
-                            purchaseSuccessful = false;
-                        }
+                    Product product = findProduct(name, description, store);
+                    if (product != null && product.getQuantityAvailable() >= 1) {
+                        product.setQuantityAvailable(product.getQuantityAvailable() - 1);
+                        recordPurchaseHistory(product, 1);
+                    } else {
+                        System.out.println("Product not available or insufficient quantity for: " + name);
+                        purchaseSuccessful = false;
                     }
                 }
             }
-
-            clearCart();
-
         } catch (IOException e) {
             e.printStackTrace();
             purchaseSuccessful = false;
@@ -159,12 +181,12 @@ public class Consumer {
         if (purchaseSuccessful) {
             System.out.println("Thank You For Purchasing!");
             updateMarketplaceFile();
+            clearCart(); // Clear the cart after successful purchase
         } else {
-            System.out.println("Purchase partially successful or failed due to insufficient stock.");
+            System.out.println("Purchase partially successful or failed.");
         }
-
-        return purchasedProducts;
     }
+
     private void updateMarketplaceFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("MarketPlace.csv"))) {
             writer.write("Name,Description,Store,Price,Quantity Available\n");
@@ -175,16 +197,43 @@ public class Consumer {
                         product.getStore(),
                         product.getPrice(),
                         product.getQuantityAvailable()));
-                System.out.println("Quanitiy:" + product.getQuantityAvailable());
-
             }
         } catch (IOException e) {
             System.err.println("Error while updating the marketplace file: " + e.getMessage());
         }
     }
 
+    private void recordPurchaseHistory(Product product, int quantity) {
+        String timeStamp = new SimpleDateFormat("MM/dd/yyyy HH:mm").format(new Date());
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(purchaseHistoryFile, true))) {
+            bw.write(timeStamp + "," + product.getName() + "," + product.getDescription() + "," + product.getStore() + "," + product.getPrice() + "," + quantity + "\n");
+        } catch (IOException e) {
+            System.err.println("Error while recording purchase history: " + e.getMessage());
+        }
+    }
+    private Product findProduct(String name, String description, String store) {
+        for (Product product : productList) {
+            if (product.getName().equals(name) &&
+                    product.getDescription().equals(description) &&
+                    product.getStore().equals(store)) {
+                return product;
+            }
+        }
+        return null;
+    }
 
-    private void clearCart() {
+
+    private void replaceMarketplaceFileWithTemp(File tempFile) {
+        File marketplaceFile = new File("MarketPlace.csv");
+        if (tempFile.renameTo(marketplaceFile)) {
+            System.out.println("Marketplace file updated successfully.");
+        } else {
+            System.out.println("Failed to update Marketplace file.");
+        }
+    }
+
+
+    public void clearCart() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(cartFile))) {
             pw.print("");
         } catch (IOException e) {
@@ -192,21 +241,11 @@ public class Consumer {
         }
     }
 
-    private Product findProduct(String name, String description, String store) {
-        ArrayList<Product> products;
-        products = getProductList();
-        for (Product product : products) {
-            if (product.getName().equals(name) && product.getDescription().equals(description) && product.getStore().equals(store)) {
-                return product;
-            }
-        }
-        return null;
-    }
 
     private void updateProductQuantity(Product purchasedProduct, int quantity) {
         purchasedProduct.setQuantityAvailable(purchasedProduct.getQuantityAvailable() - quantity);
     }
-    public void sortMarketPlace(ArrayList<Product> products, Scanner input) {
+    public static void sortMarketPlace(ArrayList<Product> products, Scanner input) {
         String choice = "";
         while (!choice.equalsIgnoreCase("P") && !choice.equalsIgnoreCase("Q")) {
             System.out.println("Would you like to sort by price (P) or quantity (Q)?");
@@ -240,11 +279,11 @@ public class Consumer {
         products.sort(comparator);
 
         for (Product p : products) {
-            System.out.println(p);
+            System.out.println(p.printForSort());
         }
     }
     public void exportPurchaseHistory() {
-        File inputFile = new File(purchaseHistroyFile);
+        File inputFile = new File(purchaseHistoryFile);
         File outputFile = new File(userName + "_PurchaseHistoryExport.csv");
 
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
@@ -263,29 +302,107 @@ public class Consumer {
     }
 
     public void viewDashboard(ArrayList<Product> products, Scanner input) {
+        ArrayList<StoreSales> storeSalesList;
+        ArrayList<StorePurchaseData> storePurchases;
         boolean cont = true;
+
         do {
-            System.out.println("Select an option for dashboard view:");
+            System.out.println("\nSelect an option for dashboard view:");
             System.out.println("1. List of Stores by Number of Products Sold");
             System.out.println("2. List of Stores by Products Purchased By You");
 
-            int choice = input.nextInt();
-            switch (choice) {
-                case 1 -> {
-                    viewStoresByProductsSold(products);
-                    cont = false;
-                }
-                case 2 -> {
-                    viewStoresByYourPurchases();
-                    cont = false;
-                }
-                default -> System.out.println("Invalid choice.");
-            }
-        } while(cont);
+            if (input.hasNextInt()) {
+                int choice = input.nextInt();
+                input.nextLine();
 
+                switch (choice) {
+                    case 1 -> {
+                        StoreplaceManager.calculateItemsPurchased();
+                        /*storeSalesList = viewStoresByProductsSold(products);
+                        // Display the results
+                        System.out.println("Stores by Number of Products Sold:");
+
+                        for (StoreSales sales : storeSalesList) {
+                            System.out.println("Store: " + sales.getStoreName() + ", Products Sold: " + sales.getTotalItemsSold());
+                        }*/
+                        cont = false;
+                    }
+                    case 2 -> {
+                        storePurchases = viewStoresByYourPurchases();
+                        System.out.println("Stores by Your Purchases:");
+                        assert storePurchases != null;
+                        for (StorePurchaseData data : storePurchases) {
+                            System.out.println("Store: " + data.getStoreName() + ", Purchases: " + data.getPurchaseCount());
+                        }
+                        cont = false;
+                    }
+                    default -> System.out.println("Invalid choice. Please select a valid option.");
+                }
+            } else {
+                System.out.println("Please enter a valid number.");
+                input.nextLine();
+            }
+        } while (cont);
     }
 
-    private void viewStoresByProductsSold(ArrayList<Product> products) {
+
+    public void sortDashboard(Scanner input) {
+        ArrayList<StoreSales> storeSalesList = viewStoresByProductsSold(productList);
+        ArrayList<StorePurchaseData> storePurchases = viewStoresByYourPurchases();
+        boolean validInputReceived = false;
+
+        while (!validInputReceived) {
+            try {
+                System.out.println("\nHow would you like to sort the dashboard?");
+                System.out.println("1: Number of Products Sold (High-Low)");
+                System.out.println("2: Number of Products Sold (Low-High)");
+                System.out.println("3: Products Purchased by You (High-Low)");
+                System.out.println("4: Products Purchased by You (Low-High)");
+
+                int choice = input.nextInt();
+
+                switch (choice) {
+                    case 1 -> {
+                        storeSalesList.sort((p1, p2) -> Integer.compare(p2.getTotalItemsSold(), p1.getTotalItemsSold()));
+                        validInputReceived = true;
+                    }
+                    case 2 -> {
+                        storeSalesList.sort(Comparator.comparingInt(StoreSales::getTotalItemsSold));
+                        validInputReceived = true;
+                    }
+                    case 3 -> {
+                        assert storePurchases != null;
+                        storePurchases.sort((p1, p2) -> Integer.compare(p2.getPurchaseCount(), p1.getPurchaseCount()));
+                        validInputReceived = true;
+                    }
+                    case 4 -> {
+                        assert storePurchases != null;
+                        storePurchases.sort(Comparator.comparingInt(StorePurchaseData::getPurchaseCount));
+                        validInputReceived = true;
+                    }
+                    default -> System.out.println("Invalid choice. Please select a valid option.");
+                }
+
+                if (validInputReceived) {
+                    if (choice <= 2) {
+                        for (StoreSales sales : storeSalesList) {
+                            System.out.println("Store: " + sales.getStoreName() + ", Products Sold: " + sales.getTotalItemsSold());
+                        }
+                    } else {
+                        for (StorePurchaseData data : storePurchases) {
+                            System.out.println("Store: " + data.getStoreName() + ", Purchases: " + data.getPurchaseCount());
+                        }
+                    }
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println("Please enter a valid number.");
+                input.nextLine();
+            }
+        }
+    }
+
+    private ArrayList<StoreSales> viewStoresByProductsSold(ArrayList<Product> products) {
         ArrayList<StoreSales> storeSalesList = new ArrayList<>();
 
         for (Product product : products) {
@@ -300,17 +417,10 @@ public class Consumer {
             storeSales.addItemsSold(itemsSold);
         }
 
-        // Sort by total items sold
-        storeSalesList.sort((s1, s2) -> Integer.compare(s2.getTotalItemsSold(), s1.getTotalItemsSold()));
-
-        // Display the results
-        System.out.println("Stores by Number of Products Sold:");
-        for (StoreSales sales : storeSalesList) {
-            System.out.println("Store: " + sales.getStoreName() + ", Products Sold: " + sales.getTotalItemsSold());
-        }
+        return storeSalesList;
     }
 
-    private StoreSales findStoreSales(List<StoreSales> list, String storeName) {
+    private static StoreSales findStoreSales (ArrayList<StoreSales> list, String storeName) {
         for (StoreSales sales : list) {
             if (sales.getStoreName().equals(storeName)) {
                 return sales;
@@ -320,38 +430,31 @@ public class Consumer {
     }
 
 
-    private void viewStoresByYourPurchases() {
+    private ArrayList<StorePurchaseData> viewStoresByYourPurchases() {
         ArrayList<StorePurchaseData> storePurchases = new ArrayList<>();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(purchaseHistroyFile))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(purchaseHistoryFile))) {
             String line;
-            reader.readLine();
 
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(",");
-                String storeName = values[3];
+                String storeName = values[3].trim(); // Trim to remove any leading/trailing spaces
 
                 StorePurchaseData existingData = findStoreData(storePurchases, storeName);
                 if (existingData != null) {
                     existingData.incrementPurchaseCount();
                 } else {
-                    storePurchases.add(new StorePurchaseData(storeName));
+                    storePurchases.add(new StorePurchaseData(storeName)); // Assuming 1 purchase for new store
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            return null;
         }
 
-        storePurchases.sort((a, b) -> b.getPurchaseCount() - a.getPurchaseCount());
-
-        System.out.println("Stores by Your Purchases:");
-        for (StorePurchaseData data : storePurchases) {
-            System.out.println("Store: " + data.getStoreName() + ", Purchases: " + data.getPurchaseCount());
-        }
+        return storePurchases;
     }
-
-    private StorePurchaseData findStoreData(List<StorePurchaseData> list, String storeName) {
+    private static StorePurchaseData findStoreData(ArrayList<StorePurchaseData> list, String storeName) {
         for (StorePurchaseData data : list) {
             if (data.getStoreName().equals(storeName)) {
                 return data;
@@ -360,13 +463,60 @@ public class Consumer {
         return null;
     }
 
+    public static void showDescription(int selectedProduct, Scanner scanner) {
+        boolean cont = true;
+        do {
+            try {
+                int index = selectedProduct - 1;
+                Product selected = productList.get(index);
+
+                System.out.println(selected.getName());
+                System.out.println(selected.getDescription() + " ----- " + selected.getQuantityAvailable() + " available");
+
+                cont = false;
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Select a valid input, please.");
+                while (!scanner.hasNextInt()) {
+                    System.out.println("Invalid input. Please enter a number.");
+                    scanner.next();
+                }
+                selectedProduct = scanner.nextInt();
+                scanner.nextLine();
+            }
+        } while (cont);
+    }
+    public ArrayList<String> printCart() {
+        ArrayList<String> cartItems = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(cartFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                cartItems.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Print
+        for (int i = 0; i < cartItems.size(); i++) {
+            System.out.println((i + 1) + ". " + cartItems.get(i));
+        }
+
+        return cartItems;
+    }
+
     public static void main(String[] args) { //For Testing
         Consumer c = new Consumer("Sameer");
         Scanner input = new Scanner(System.in);
         ArrayList<Product> products;
         products = viewMarketPlace();
-        c.addProduct(products.get(5));
-        c.addProduct((products.get(3)));
-        c.purchase();
+        //c.addProduct(products.get(5));
+        //c.addProduct((products.get(3)));
+        //c.purchaseProduct();
+        //viewDashboard(products, input);
+        //sortDashboard(input);
+        //c.addProduct(productList.get(5));
+        //c.addProduct(productList.get(0));
+        //c.removeProduct(productList.get(0).getName());
     }
 }

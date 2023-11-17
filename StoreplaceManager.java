@@ -2,13 +2,15 @@ import java.io.*;
 import java.nio.file.*;
 import java.util.*;
 
-// not fixed
-
 public class StoreplaceManager {
     private static String sellerName;
-    private static int counter = 0;
     private static String storeName;
-    private static String productsFilePath = "MarketPlace.csv";
+    private static String productsFilePath = storeName + "_productsFilePath.csv";;
+    private static String storeSalesFilePath = storeName + "_storeSalesFilePath.csv";
+
+    private static final String CSV_FILE = "user_data.csv";
+    private static final String PURCHASE_HISTORY_SUFFIX = "PurchaseHistory.csv";
+    private static Map<String, Integer> itemsPurchasedMap = new HashMap<>();
 
     public StoreplaceManager(String inSellerName, String inStoreName) {
         this.sellerName = inSellerName;
@@ -25,11 +27,9 @@ public class StoreplaceManager {
             System.out.println("[1] Create Product");
             System.out.println("[2] Edit Product");
             System.out.println("[3] Delete Product");
-            System.out.println("[4] Import Product");
-            System.out.println("[5] Export Product");
-            System.out.println("[6] View each customer's number of purchase; ");
-            System.out.println("[7] View the list of products with their sale");
-            System.out.println("[8] Exit");
+            System.out.println("[4] Export Product");
+            System.out.println("[5] View Sales");
+            System.out.println("[6] Exit");
 
             System.out.println("Enter your choice: ");
             choice = input.nextLine();
@@ -51,18 +51,12 @@ public class StoreplaceManager {
                         deleteProduct(input);
                         break;
                     case 4:
-                        importProduct(input);
-                        break;
-                    case 5:
                         exportProduct(input);
                         break;
+                    case 5:
+                        calculateItemsPurchased();
+                        break;
                     case 6:
-                        printItemsPurchasedStatistics();
-                        break;
-                    case 7:
-                        calculateProductSales();
-                        break;
-                    case 8:
                         System.out.println("Exiting Storeplace Manager Dashboard");
                         return;
                     default:
@@ -80,6 +74,7 @@ public class StoreplaceManager {
         double doublePrice = 0.0;
         int intQuantityAvailable = 0;
         try {
+            input.nextLine();
             System.out.print("Enter product name: ");
             String name = input.nextLine();
             System.out.print("Enter product description: ");
@@ -88,7 +83,7 @@ public class StoreplaceManager {
             String price = input.nextLine();
             try {
                 doublePrice = Double.parseDouble(price);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e){
                 System.out.println("Type in a double value");
             }
 
@@ -96,7 +91,7 @@ public class StoreplaceManager {
             String quantityAvailable = input.nextLine();
             try {
                 intQuantityAvailable = Integer.parseInt(price);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e){
                 System.out.println("Type in a double value");
             }
 
@@ -106,15 +101,7 @@ public class StoreplaceManager {
             }
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(productsFilePath, true))) {
-                writer.write(name + "," + description + "," + storeName + "," + doublePrice + "," + intQuantityAvailable);
-                writer.newLine();
-                System.out.println("Product created successfully.");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(productsFilePath, true))) {
-                writer.write(name + "," + description + "," + doublePrice + "," + intQuantityAvailable);
+                writer.write(sellerName + "," + name + "," + description + "," + doublePrice + "," + intQuantityAvailable);
                 writer.newLine();
                 System.out.println("Product created successfully.");
             } catch (IOException e) {
@@ -140,14 +127,14 @@ public class StoreplaceManager {
             String newPrice = input.nextLine();
             try {
                 newDoublePrice = Double.parseDouble(newPrice);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e){
                 System.out.println("Type in a double value");
             }
             System.out.print("Enter the new quantity available: ");
             String newQuantityAvailable = input.nextLine();
             try {
                 intNewQuantityAvailable = Integer.parseInt(newQuantityAvailable);
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e){
                 System.out.println("Type in a double value");
             }
 
@@ -159,9 +146,8 @@ public class StoreplaceManager {
                     String[] productDetails = line.split(",");
                     if (productDetails.length == 5 && productDetails[1].equals(productName)) {
                         productDetails[2] = description;
-                        productDetails[3] = storeName;
-                        productDetails[4] = Double.toString(newDoublePrice);
-                        productDetails[5] = Integer.toString(intNewQuantityAvailable);
+                        productDetails[3] = Double.toString(newDoublePrice);
+                        productDetails[4] = Integer.toString(intNewQuantityAvailable);
                     }
                     writer.write(String.join(",", productDetails));
                     writer.newLine();
@@ -218,223 +204,88 @@ public class StoreplaceManager {
         }
     }
 
-    private void importProduct(Scanner input) {
-        System.out.println("Enter the file you wish to import: ");
-        String filePath = input.nextLine();
-        File inputFile = new File(filePath);
-        File outputFile = new File("MarketPlace.csv");
-        if (Files.exists(Paths.get(inputFile.toURI()))) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-
-                System.out.println("Purchase history imported successfully to " + outputFile.getName());
-            } catch (IOException e) {
-                System.out.println("Error while importing purchase history: " + e.getMessage());
-            }
-        } else {
-            System.out.println("File not found! ");
-        }
-    }
     private void exportProduct(Scanner input) {
+        input.nextLine();
         System.out.println("Enter the file you wish to export: ");
         String filePath = input.nextLine();
         File inputFile = new File(filePath);
-        File outputFile = new File("ExportFile" + counter + ".csv");
+        File outputFile = new File(productsFilePath);
 
-        if (Files.exists(Paths.get(inputFile.toURI()))) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile, true))) {
 
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-
-                System.out.println("Data exported successfully to " + outputFile.getName());
-                counter++; // Increment the counter for the next export
-
-            } catch (IOException e) {
-                System.out.println("Error while exporting data: " + e.getMessage());
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+                writer.newLine();
             }
-        } else {
-            System.out.println("File not found! ");
+
+            System.out.println("Purchase history exported successfully to " + outputFile.getName());
+        } catch (IOException e) {
+            System.out.println("Error while exporting purchase history: " + e.getMessage());
         }
     }
 
-    public static void printItemsPurchasedStatistics() {
-        try (BufferedReader userDataReader = new BufferedReader(new FileReader("user_data.csv"))) {
-            String userLine;
-            while ((userLine = userDataReader.readLine()) != null) {
-                String[] userData = userLine.split(",");
-                if (userData.length == 3) {
-                    String userId = userData[1];
-                    String userEmail = userData[0];
+    public static void calculateItemsPurchased() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(CSV_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 2) {
+                    String email = data[1].trim();
+                    String role = data[2].trim();
 
-                    int itemsPurchased = calculateItemsPurchased(userId);
-
-                    System.out.println("User email: " + userEmail);
-                    System.out.println("Items purchased: " + itemsPurchased);
-                    System.out.println();
+                    if (role.equals("buyer")) {
+                        calculateUserItemsPurchased(email);
+                    }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        printItemsPurchasedStatistics();
     }
 
-    private static int calculateItemsPurchased(String userId) {
+    private static void calculateUserItemsPurchased(String email) {
+        String purchaseHistoryFile = email + PURCHASE_HISTORY_SUFFIX;
         int itemsPurchased = 0;
-        String purchaseHistoryFileName = userId + "PurchaseHistory.csv";
 
-        try (BufferedReader purchaseHistoryReader = new BufferedReader(new FileReader(purchaseHistoryFileName))) {
-            String purchaseHistoryLine;
-            while ((purchaseHistoryLine = purchaseHistoryReader.readLine()) != null) {
-                String[] purchaseDetails = purchaseHistoryLine.split(",");
-                if (purchaseDetails.length == 6) {
-                    int quantity = Integer.parseInt(purchaseDetails[5]);
-                    itemsPurchased += quantity;
-                }
+        try (BufferedReader historyReader = new BufferedReader(new FileReader(purchaseHistoryFile))) {
+            // Assuming each line in the purchase history file corresponds to one item
+            while (historyReader.readLine() != null) {
+                itemsPurchased++;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return itemsPurchased;
+        itemsPurchasedMap.put(email, itemsPurchased);
     }
 
-
-
-    public static void calculateStoreSales() {
-        Map<String, Integer> storeSales = new HashMap<>();
-
-        try (BufferedReader marketplaceReader = new BufferedReader(new FileReader("MarketPlace.csv"));
-             BufferedWriter storeSalesWriter = new BufferedWriter(new FileWriter("storeSales.csv"))) {
-
-            // Read the third element of each row in MarketPlace.csv and add unique stores to storeSales
-            String marketplaceLine;
-            while ((marketplaceLine = marketplaceReader.readLine()) != null) {
-                String[] productDetails = marketplaceLine.split(",");
-                if (productDetails.length == 5) {
-                    String storeName = productDetails[2];
-
-                    // Add unique stores to storeSales
-                    if (!storeSales.containsKey(storeName)) {
-                        storeSales.put(storeName, 0);
-                    }
-                }
-            }
-
-            // Write store names to storeSales.csv
-            for (String storeName : storeSales.keySet()) {
-                storeSalesWriter.write(storeName + "," + storeSales.get(storeName) + "\n");
-            }
-
-            // Go through the file again and update quantities in storeSales.csv
-            marketplaceReader.close();
-            BufferedReader marketReader = new BufferedReader(new FileReader("MarketPlace.csv"));
-
-            while ((marketplaceLine = marketReader.readLine()) != null) {
-                String[] productDetails = marketplaceLine.split(",");
-                if (productDetails.length == 5) {
-                    String storeName = productDetails[2];
-                    int quantity = Integer.parseInt(productDetails[4]);
-
-                    // Update quantities in storeSales.csv
-                    if (storeSales.containsKey(storeName)) {
-                        int currentSales = storeSales.get(storeName);
-                        storeSales.put(storeName, currentSales + quantity);
-                    }
-                }
-            }
-
-            // Display store sales
-            System.out.println("Store Sales:");
-            for (Map.Entry<String, Integer> entry : storeSales.entrySet()) {
-                System.out.println(entry.getKey() + ": " + entry.getValue() + " products sold");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    private static void printItemsPurchasedStatistics() {
+        System.out.println("Items Purchased Statistics:");
+        for (Map.Entry<String, Integer> entry : itemsPurchasedMap.entrySet()) {
+            System.out.println("User Email: " + entry.getKey());
+            System.out.println("Items Purchased: " + entry.getValue());
+            System.out.println("---------------");
         }
     }
 
-    public static void calculateProductSales() {
-        Map<String, Integer> productSales = new HashMap<>();
-
-        // Write products from MarketPlace.csv to productSales.csv
-        try (BufferedReader marketplaceReader = new BufferedReader(new FileReader("MarketPlace.csv"));
-             BufferedWriter productSalesWriter = new BufferedWriter(new FileWriter("productSales.csv"))) {
-
-            String marketplaceLine;
-            while ((marketplaceLine = marketplaceReader.readLine()) != null) {
-                String[] productDetails = marketplaceLine.split(",");
-                if (productDetails.length == 5) {
-                    String productName = productDetails[0];
-                    productSales.put(productName, 0); // Initialize counts to 0
-                    productSalesWriter.write(productName + "," + 0 + "\n");
-                }
+    private static StoreSales findStoreSales(List<StoreSales> list, String storeName) {
+        for (StoreSales sales : list) {
+            if (sales.getStoreName().equals(storeName)) {
+                return sales;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
-        // Process user purchase history and update productSales
-        try (BufferedReader userDataReader = new BufferedReader(new FileReader("user_data.csv"))) {
-            // Read user data and create a map of user IDs to user names
-            Map<String, String> userIdToName = new HashMap<>();
-            String userLine;
-            while ((userLine = userDataReader.readLine()) != null) {
-                String[] userData = userLine.split(",");
-                if (userData.length == 3) {
-                    userIdToName.put(userData[0], userData[1]);  // Second element is the user ID, first is the user name
-                }
-            }
-
-            // Iterate through each user's purchase history and update productSales
-            for (String userId : userIdToName.keySet()) {
-                String purchaseHistoryFileName = userIdToName.get(userId) + "PurchaseHistory.csv";
-                Path purchaseHistoryPath = Paths.get(purchaseHistoryFileName);
-
-                if (Files.exists(purchaseHistoryPath) && Files.size(purchaseHistoryPath) > 0) {
-                    try (BufferedReader purchaseHistoryReader = new BufferedReader(new FileReader(purchaseHistoryFileName))) {
-                        String purchaseHistoryLine;
-                        while ((purchaseHistoryLine = purchaseHistoryReader.readLine()) != null) {
-                            String[] purchaseDetails = purchaseHistoryLine.split(",");
-                            if (purchaseDetails.length == 6) {
-                                String productName = purchaseDetails[1];
-                                int quantity = Integer.parseInt(purchaseDetails[5]);
-
-                                // Update product sales count
-                                int currentSales = productSales.get(productName);
-                                productSales.put(productName, currentSales + quantity);
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Print the updated sales data
-        for (Map.Entry<String, Integer> entry : productSales.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
+        return null;
     }
 
 
-    private void replaceOriginalFile(String originalFile, String tempFile) {
+    private void replaceOriginalFile(String original, String tempfile) {
         try {
-            Path originalPath = Paths.get(originalFile);
-            Path tempPath = Paths.get(tempFile);
+            Path originalPath = Paths.get(original);
+            Path tempPath = Paths.get(tempfile);
 
             List<String> tempLines = Files.readAllLines(tempPath);
             Files.write(originalPath, tempLines, StandardOpenOption.TRUNCATE_EXISTING);
@@ -445,6 +296,4 @@ public class StoreplaceManager {
             e.printStackTrace();
         }
     }
-
 }
-

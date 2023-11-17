@@ -69,12 +69,10 @@ public class Product {
 
     @Override
     public String toString() {
-        return "Product{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", store='" + store + '\'' +
-                ", price=" + price +
-                ", quantityAvailable=" + quantityAvailable +
-                '}';
+        return name + " ----- " + store + " ----- " + price;
+    }
+
+    public String printForSort() {
+        return name + " ----- " + store + " ----- " + price + "-----" + quantityAvailable;
     }
 }
