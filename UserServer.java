@@ -81,7 +81,7 @@ public class UserServer {
             if ("CREATE".equals(request)) {
                 handleCreateRequest(email, password, role, writer);
             } else if ("LOGIN".equals(request)) {
-                handleLoginRequest(email, password, writer);
+                handleLoginRequest(email, password, role, writer);
             }
 
         } catch (IOException e) {
@@ -95,8 +95,8 @@ public class UserServer {
             response = "INVALID_EMAIL";
         } else if (password.length() > 20) {
             response = "INVALID_PASSWORD_LENGTH";
-        } else if (userCredentials.containsKey(email)) {
-            response = "EMAIL_ALREADY_EXISTS";
+        } else if (userCredentials.containsKey(email) && userCredentials.containsKey(role)) {
+            response = "EMAIL_ALREADY_EXISTS_FOR_THAT_ROLE";
         } else {
             // Valid email and password, create user
             userCredentials.put(email, password);
@@ -110,12 +110,15 @@ public class UserServer {
         writer.println(response);
     }
 
-    private void handleLoginRequest(String email, String password, PrintWriter writer) {
+    private void handleLoginRequest(String email, String password, String role, PrintWriter writer) {
         String response;
         if (!isValidEmail(email)) {
             response = "INVALID_EMAIL";
         } else if (!userCredentials.containsKey(email) || !userCredentials.get(email).equals(password)) {
             response = "INVALID_CREDENTIALS";
+
+        } else if (!userCredentials.get(email).equals(role)) {
+            response = "INVALID_CREDENTIALS_FOR_ROLE";
         } else {
             // Valid login credentials
             response = "SUCCESS";

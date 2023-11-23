@@ -128,6 +128,7 @@ public class UserAccountManager extends JFrame {
     private void signInUser() {
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
+        String role = new String(roleComboBox.getRole());
         String serverAddress = serverAddressField.getText();
         int serverPort = Integer.parseInt(serverPortField.getText());
 
@@ -141,12 +142,15 @@ public class UserAccountManager extends JFrame {
             writer.println("LOGIN");
             writer.println(email);
             writer.println(password);
+            writer.println(role);
 
             // Receive response from the server
             String response = reader.readLine();
 
             if ("SUCCESS".equals(response)) {
                 statusLabel.setText("User signed in successfully!");
+                JOptionPane.showConfirmDialog("Opening " + role + " portal:");
+
             } else {
                 statusLabel.setText("Login failed. Invalid username or password.");
             }
