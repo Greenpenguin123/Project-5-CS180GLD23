@@ -33,7 +33,7 @@ public class UserAccountManager extends JFrame {
     public UserAccountManager() {
         setTitle("P4 Marketplace User Account Manager");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 250);
+        setSize(500, 280);
         setLocationRelativeTo(null);
 
         setupUI();
@@ -128,7 +128,7 @@ public class UserAccountManager extends JFrame {
     private void signInUser() {
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
-        String role = new String(roleComboBox.getRole());
+        String role = new String(String.valueOf(roleComboBox.getSelectedItem()));
         String serverAddress = serverAddressField.getText();
         int serverPort = Integer.parseInt(serverPortField.getText());
 
@@ -149,7 +149,8 @@ public class UserAccountManager extends JFrame {
 
             if ("SUCCESS".equals(response)) {
                 statusLabel.setText("User signed in successfully!");
-                JOptionPane.showConfirmDialog("Opening " + role + " portal:");
+                JOptionPane.showMessageDialog(null, "Opening " + role + " portal");
+
 
             } else {
                 statusLabel.setText("Login failed. Invalid username or password.");

@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import static java.lang.Integer.parseInt;
-
+/*
 public class UserNavigation {
 
     private static final String mainOptions = ("[1] Select a product\n[2] Sort MarketPlace\n[3] Search MarketPlace\n[4] View Sellers\n[5] Shopping Cart\n[6] Sign-out");
@@ -244,3 +244,4 @@ public class UserNavigation {
         return null;
     }
 }
+*/
