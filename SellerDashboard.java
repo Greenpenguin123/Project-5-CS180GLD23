@@ -1,134 +1,151 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
-import static java.lang.Integer.parseInt;
+import java.util.concurrent.locks.ReentrantLock;
 
-// fixed
-
-public class SellerDashboard {
-    public static String name = "";
+public class SellerDashboard extends JFrame implements SellerInterface {
+    private static String name = "";
     private static Map<String, StoreplaceManager> storeManagers = new HashMap<>();
+    private static ReentrantLock editingLock = new ReentrantLock();
 
-    public SellerDashboard(String name) throws IOException {
-        this.storeManagers = new HashMap<>();
+    public SellerDashboard(String name) {
         this.name = name;
-        loadStoresFromFile(); // Load existing stores from file on initialization
-    }
-
-    public static void displayDashboard(String name) {
-        System.out.println("Hello " + name);
-        Scanner input = new Scanner(System.in);
-        String choice;
-        int intChoice = 0;
-
-        do {
-            System.out.println("Seller Dashboard:\nWhat would you like to do:");
-            System.out.println("[1] Create Store");
-            System.out.println("[2] Enter Store");
-            System.out.println("[3] Exit");
-            choice = input.nextLine();
+        if (!Files.exists(Paths.get("store_data.csv"))) {
             try {
-                intChoice = parseInt(choice);
-            } catch (NumberFormatException e) {
-                System.out.println("Please type in an integer! ");
-            }
-            try {
-                switch (intChoice) {
-                    case 1:
-                        createStore(input);
-                        break;
-                    case 2:
-                        enterStore(input);
-                        break;
-                    case 3:
-                        System.out.println("Exiting Seller Dashboard");
-                        saveStoresToFile(); // Save store information to file before exiting
-                        return;
-                    default:
-                        System.out.println("Invalid choice. Please enter a number between 1 and 3.");
-                }
-            } catch (IllegalArgumentException e) {
-                System.out.println("Print out an integer.");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } while (true);
-    }
-
-    private static void createStore(Scanner input) {
-        System.out.print("Enter store name: ");
-        String storeName = input.nextLine();
-        if (!storeManagers.containsKey(storeName)) {
-            StoreplaceManager storeManager = new StoreplaceManager(name, storeName);
-            storeManagers.put(storeName, storeManager);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(name + "store_data.csv"))) {
-                writer.write(storeName + ",");
-                writer.newLine();
-                System.out.println("Store '" + storeName + "' created successfully.");
+                Files.createFile(Paths.get("store_data.csv"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else {
-            System.out.println("Store with the same name already exists.");
+        }
+        loadStoresFromFile();
+
+        setTitle("Seller Dashboard");
+        setSize(400, 300);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel panel = new JPanel();
+        add(panel);
+        placeComponents(panel);
+
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void placeComponents(JPanel panel) {
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel nameLabel = new JLabel("Hello " + name);
+        panel.add(nameLabel);
+
+        JButton createButton = new JButton("Create Store");
+        createButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                createStore();
+            }
+        });
+        panel.add(createButton);
+
+        JButton enterButton = new JButton("Enter Store");
+        enterButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                enterStore();
+            }
+        });
+        panel.add(enterButton);
+
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                saveStoresToFile();
+                System.exit(0);
+            }
+        });
+        panel.add(exitButton);
+    }
+
+    public void createStore() {
+        String storeName = JOptionPane.showInputDialog("Enter store name:");
+        if (storeName != null) {
+            synchronized (storeManagers) {
+                if (!storeManagers.containsKey(storeName)) {
+                    editingLock.lock();
+                    try {
+                        StoreplaceManager storeManager = new StoreplaceManager(name, storeName);
+                        storeManagers.put(storeName, storeManager);
+
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter("store_data.csv", true))) {
+                            writer.write(name + "," + storeName);
+                            writer.newLine();
+                            System.out.println("Store '" + storeName + "' created successfully.");
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    } finally {
+                        editingLock.unlock();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Store with the same name already exists.");
+                }
+            }
         }
     }
 
-    private static void enterStore(Scanner input) throws IOException {
-        System.out.print("Enter store name: ");
-        String storeName = input.nextLine().trim(); // Trim the user input
+    public void enterStore() {
+        String storeName = JOptionPane.showInputDialog("Enter store name:");
+        if (storeName != null) {
+            synchronized (storeManagers) {
+                if (storeManagers.containsKey(storeName)) {
+                    editingLock.lock();
+                    try {
+                        StoreplaceManager storeManager = storeManagers.get(storeName);
+                        if (storeManager != null) {
+                            storeManager.displayDashboard(storeName);
+                        }
+                    } finally {
+                        editingLock.unlock();
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Store not found. Please create the store first.");
+                }
+            }
+        }
+    }
 
-        StoreplaceManager storeManager;
+    public void loadStoresFromFile() {
+        synchronized (storeManagers) {
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(name + "store_data.csv"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] storeDetails = line.split(",");
-
-                if (storeName.equals(storeDetails[0].trim())) {
-                    storeManager = storeManagers.get(storeName);
-                    if (storeManager != null) {
-                        storeManager.displayDashboard(storeName);
-                        return;
+            try (BufferedReader reader = new BufferedReader(new FileReader("store_data.csv"))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] storeDetails = line.split(",");
+                    if (storeDetails.length == 2) {
+                        String sellerName = storeDetails[0].trim();
+                        String storeName = storeDetails[1].trim();
+                        storeManagers.put(storeName, new StoreplaceManager(sellerName, storeName));
                     }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found: " + e.getMessage());
         }
-
-        System.out.println("Store not found. Please create the store first.");
     }
 
-    private static void loadStoresFromFile() throws IOException {
-        if (!Files.exists(Paths.get(name + "store_data.csv"))) {
-            Files.createFile(Paths.get(name + "store_data.csv"));
-        }
-        try (BufferedReader reader = new BufferedReader(new FileReader(name + "store_data.csv"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] storeDetails = line.split(",");
-                if (storeDetails.length == 2) {
-                    String sellerName = storeDetails[0].trim();
-                    String storeName = storeDetails[0].trim();
-                    storeManagers.put(storeName, new StoreplaceManager(sellerName, storeName));
+    public void saveStoresToFile() {
+        synchronized (storeManagers) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("store_data.csv"))) {
+                for (Map.Entry<String, StoreplaceManager> entry : storeManagers.entrySet()) {
+                    writer.write(name + "," + entry.getKey());
+                    writer.newLine();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void saveStoresToFile() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(name + "store_data.csv"))) {
-            for (Map.Entry<String, StoreplaceManager> entry : storeManagers.entrySet()) {
-                writer.write(name + "," + entry.getKey());
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
