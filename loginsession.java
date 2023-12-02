@@ -38,6 +38,7 @@ public class loginsession {
             ret = userdata.removeUser(emailVal,pwdVal,typeVal);
             ReturnResult(ret?0:-1, ret?"":"remove user failed", out);
         }
+        /*if(reqVal.equals(""))*/
     }
 
     private void ReturnResult(int status, String msg, PrintWriter out)

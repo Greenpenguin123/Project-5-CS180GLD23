@@ -1,7 +1,7 @@
-import java.io.*;
-import java.net.*;
-
 import org.json.simple.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.PrintWriter;
 
 public class Auth {
     private ILog log;
