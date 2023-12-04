@@ -14,13 +14,11 @@ class UserData {
         this.password = password;
         this.userType = userType;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
     public String getEmail() {
         return email;
+    }
+    public String getPassword() {
+        return password;
     }
 
     public String getUserType() {
@@ -140,6 +138,7 @@ class UserManager {
 
     private boolean isValidEmail(String email) {
         // Add email
+        //return email.matches("");
         return true;
     }
 

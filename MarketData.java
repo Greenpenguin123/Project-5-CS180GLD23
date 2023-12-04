@@ -1,4 +1,4 @@
-/*
+
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -9,54 +9,6 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-class Product {
-    private String name;
-    private String description;
-    private int quantity;
-    private double price;
-
-    public Product(String name, String description, int quantity, double price) {
-        this.name = name;
-        this.description = description;
-        this.quantity = quantity;
-        this.price = price;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void SetQuantity(int quantity)
-    {
-        this.quantity = quantity;
-    }
-
-    public JSONObject toJSON() {
-        JSONObject jsonProduct = new JSONObject();
-        jsonProduct.put("name", name);
-        jsonProduct.put("description", description);
-        jsonProduct.put("quantity", quantity);
-        jsonProduct.put("price", price);
-        return jsonProduct;
-    }
-}
 
 class Store {
     private String name;
@@ -135,7 +87,7 @@ class ErrorcodeMap {
         return ERROR_CODE_MAP.get(errCode);
     }
 }
-/*
+
 public class MarketData implements IMarketData {
 
     private final String DATA_FILE = "market_data.json";
@@ -273,5 +225,5 @@ public class MarketData implements IMarketData {
             }
         }
         return null;
-    }*/
+    }
 

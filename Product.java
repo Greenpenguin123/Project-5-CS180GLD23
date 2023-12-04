@@ -1,3 +1,5 @@
+import org.json.simple.JSONObject;
+
 public class Product {
     private String name;
     private String description;
@@ -55,7 +57,6 @@ public class Product {
         this.itemsSold = itemsSold;
     }
 
-
     public int getQuantityAvailable() {
         return quantityAvailable;
     }
@@ -74,5 +75,16 @@ public class Product {
 
     public String printForSort() {
         return name + " ----- " + store + " ----- " + price + "-----" + quantityAvailable;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject jsonProduct = new JSONObject();
+        jsonProduct.put("name", name);
+        jsonProduct.put("description", description);
+        jsonProduct.put("store",store);
+        jsonProduct.put("price", price);
+        jsonProduct.put("quantity", quantityAvailable);
+        return jsonProduct;
+
     }
 }

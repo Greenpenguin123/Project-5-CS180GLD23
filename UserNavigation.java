@@ -38,11 +38,11 @@ public class UserNavigation {
         int cartOptions = 0;
 
         do {
-            UserAccountManager u = new UserAccountManager();
+            UserManager u = new UserManager();
             signedIn = true;
             mainOptionsChoiceOngoing = true;
             System.out.println("Signed in! How can we help you?");
-            Consumer c = new Consumer(UserAccountManager.userName);
+            Consumer c = new Consumer(UserManager.userName);
             do {
                 System.out.println(mainOptions);
                 mainOptionsChoiceString = scanner.nextLine();
@@ -243,5 +243,4 @@ public class UserNavigation {
             }
         return null;
     }
-}
-*/
+}*/

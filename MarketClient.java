@@ -37,7 +37,7 @@ public class MarketClient extends JFrame {
 
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setTitle("Market Client");
-            setSize(400, 300);
+            setSize(1000, 750);
 
             JPanel panel = new JPanel();
             panel.setLayout(new GridLayout(5, 2));
@@ -99,7 +99,7 @@ public class MarketClient extends JFrame {
     private void createUser(String email, String pwd, String userType) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "adduser");
-        jsonMessage.put("name", email);
+        jsonMessage.put("email", email);
         jsonMessage.put("pwd", pwd);
         jsonMessage.put("type", userType);
 
@@ -109,7 +109,7 @@ public class MarketClient extends JFrame {
     private void login(String email, String pwd, String userType) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "login");
-        jsonMessage.put("name", email);
+        jsonMessage.put("email", email);
         jsonMessage.put("pwd", pwd);
         jsonMessage.put("type", userType);
 
@@ -119,7 +119,7 @@ public class MarketClient extends JFrame {
     private void deleteUser(String email, String pwd, String userType) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "removeuser");
-        jsonMessage.put("name", email);
+        jsonMessage.put("email", email);
         jsonMessage.put("pwd", pwd);
         jsonMessage.put("type", userType);
 

@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-
+/*
 public class UserAccountManager extends JFrame {
 
     private static final Logger LOGGER = Logger.getLogger(UserAccountManager.class.getName());
@@ -167,4 +167,4 @@ public class UserAccountManager extends JFrame {
         fileHandler.setFormatter(new SimpleFormatter());
         LOGGER.addHandler(fileHandler);
     }
-}
+}*/
