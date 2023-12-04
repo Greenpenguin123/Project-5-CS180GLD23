@@ -1,5 +1,5 @@
 import org.json.simple.JSONObject;
-
+/*
 public class Product {
     private String name;
     private String description;
@@ -8,7 +8,7 @@ public class Product {
     private int quantityAvailable;
     private double price;
 
-    public Product(String name, String description, String store, double price, int quantityAvailable) {
+    public Product(String name, String description, double price, int quantityAvailable) {
         this.name = name;
         this.description = description;
         this.store = store;
@@ -88,3 +88,4 @@ public class Product {
 
     }
 }
+*/

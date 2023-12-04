@@ -8,9 +8,17 @@ public class LoginWnd extends JFrame {
     private JTextField serverAddressField, portField, usernameField;
     private JPasswordField passwordField;
     private JRadioButton sellerRadioButton, buyerRadioButton;
+    private JTextArea statusTextArea;
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            MarketClient marketClient = new MarketClient();
+            marketClient.setVisible(true);
+        });
+    }
 
     public LoginWnd() {
-        super("Login Window");
+        super("Market Client");
 
         // Create components
         JLabel serverAddressLabel = new JLabel("Server Address:");
@@ -33,16 +41,19 @@ public class LoginWnd extends JFrame {
         JButton loginButton = new JButton("Login");
         JButton createAccountButton = new JButton("Create New Account");
 
+        JButton createUserButton = new JButton("Create User");
+        JButton deleteUserButton = new JButton("Delete User");
+
+        statusTextArea = new JTextArea();
+        statusTextArea.setEditable(false);
+
         // Set layout
-        setLayout(new GridLayout(8, 2, 5, 5));
+        setLayout(new GridLayout(10, 2, 5, 5));
 
         // Add components to the frame
         add(serverAddressLabel);
-
-        serverAddressField.setText("localhost");
         add(serverAddressField);
         add(portLabel);
-        portField.setText("5432");
         add(portField);
         add(usernameLabel);
         add(usernameField);
@@ -56,6 +67,9 @@ public class LoginWnd extends JFrame {
         add(loginButton);
         add(new JLabel()); // Empty label for spacing
         add(createAccountButton);
+        add(createUserButton);
+        add(deleteUserButton);
+        add(statusTextArea);
 
         sellerRadioButton.setSelected(true);
 
@@ -76,9 +90,9 @@ public class LoginWnd extends JFrame {
 
                 if (ret == 0) {
                     // For simplicity, just show a message for now
-                    JOptionPane.showMessageDialog(LoginWnd.this, "Login Successful as " + userType + "!");
+                    statusTextArea.setText("Login Successful as " + userType + "!");
                 } else {
-                    JOptionPane.showMessageDialog(LoginWnd.this, "Login failed as " + userType + "!");
+                    statusTextArea.setText("Login failed as " + userType + "!");
                     return;
                 }
 
@@ -87,7 +101,7 @@ public class LoginWnd extends JFrame {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                                        // Close the login window
+                        // Close the login window
                         dispose();
                         SellerWnd sellerWnd = new SellerWnd(username);
                         sellerWnd.setVisible(true);
@@ -101,15 +115,16 @@ public class LoginWnd extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 // Handle new account creation logic here
                 // Example: Open a new window for account creation
-                JOptionPane.showMessageDialog(LoginWnd.this, "Opening New Account Window...");
+                statusTextArea.setText("Opening New Account Window...");
             }
         });
 
+
+
         // Set frame properties
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(400, 500);
         setLocationRelativeTo(null); // Center the frame on the screen
         setVisible(true);
     }
-
 }

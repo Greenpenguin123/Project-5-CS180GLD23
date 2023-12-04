@@ -173,7 +173,7 @@ public class CmdIO {
                 int quantity = ((Long)jsonProduct.get("quantity")).intValue();
                 double price = (double)jsonProduct.get("price");
 
-                Product prod = new Product(prodName, description, quantity, price);
+                Product prod = new Product(prodName, description, (int) price,  quantity);
                 products.add(prod);
             }
         } catch (IOException | ParseException e) {
