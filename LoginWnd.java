@@ -21,17 +21,12 @@ public class LoginWnd extends JFrame {
         super("Market Client");
 
         // Create components
-        JLabel serverAddressLabel = new JLabel("Server Address:");
-        JLabel portLabel = new JLabel("Port:");
         JLabel usernameLabel = new JLabel("Username:");
         JLabel passwordLabel = new JLabel("Password:");
         JLabel userTypeLabel = new JLabel("User Type:");
 
-        serverAddressField = new JTextField();
-        portField = new JTextField();
         usernameField = new JTextField();
         passwordField = new JPasswordField();
-
         sellerRadioButton = new JRadioButton("Seller");
         buyerRadioButton = new JRadioButton("Buyer");
         ButtonGroup userTypeGroup = new ButtonGroup();
@@ -40,8 +35,6 @@ public class LoginWnd extends JFrame {
 
         JButton loginButton = new JButton("Login");
         JButton createAccountButton = new JButton("Create New Account");
-
-        JButton createUserButton = new JButton("Create User");
         JButton deleteUserButton = new JButton("Delete User");
 
         statusTextArea = new JTextArea();
@@ -51,10 +44,6 @@ public class LoginWnd extends JFrame {
         setLayout(new GridLayout(10, 2, 5, 5));
 
         // Add components to the frame
-        add(serverAddressLabel);
-        add(serverAddressField);
-        add(portLabel);
-        add(portField);
         add(usernameLabel);
         add(usernameField);
         add(passwordLabel);
@@ -63,11 +52,9 @@ public class LoginWnd extends JFrame {
         add(sellerRadioButton);
         add(new JLabel()); // Empty label for spacing
         add(buyerRadioButton);
-        add(new JLabel()); // Empty label for spacing
-        add(loginButton);
-        add(new JLabel()); // Empty label for spacing
+
         add(createAccountButton);
-        add(createUserButton);
+        add(loginButton);
         add(deleteUserButton);
         add(statusTextArea);
 
@@ -78,26 +65,33 @@ public class LoginWnd extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Handle login logic here
-                String serverAddress = serverAddressField.getText();
-                int port = Integer.parseInt(portField.getText());
+                String serverAddress = "localhost";
+                int port = 5432;
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 String userType = sellerRadioButton.isSelected() ? "seller" : "buyer";
 
-                // Perform login validation here
-                // Example: Check credentials against a database
                 int ret = CmdIO.Login(serverAddress, port, username, password, userType);
 
                 if (ret == 0) {
-                    // For simplicity, just show a message for now
                     statusTextArea.setText("Login Successful as " + userType + "!");
                 } else {
                     statusTextArea.setText("Login failed as " + userType + "!");
                     return;
                 }
 
+                if (userType.equals("seller")) {
+                    dispose();
+                    SellerWnd sellerWnd = new SellerWnd(username);
+                    sellerWnd.setVisible(true);
+                } else {
+                    dispose();
+                    return;
+                }
                 // Launch another frame window (replace MyOtherFrame with your actual frame
                 // class)
+
+                /*
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -106,16 +100,33 @@ public class LoginWnd extends JFrame {
                         SellerWnd sellerWnd = new SellerWnd(username);
                         sellerWnd.setVisible(true);
                     }
-                });
+                });*/
             }
         });
 
         createAccountButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Handle new account creation logic here
-                // Example: Open a new window for account creation
-                statusTextArea.setText("Opening New Account Window...");
+                String serverAddress = "localhost";
+                int port = 5432;
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+                String userType = sellerRadioButton.isSelected() ? "seller" : "buyer";
+
+                int ret = CmdIO.AddLogin(serverAddress, port, username, password, userType);
+                if (ret == 0) {
+                    statusTextArea.setText("Accounted created successfully as " + userType + "!");
+                } else {
+                    statusTextArea.setText("Account created failed as " + userType + "!");
+                    return;
+                }
+
+                if (userType.equals("seller")) {
+                    SellerWnd sellerWnd = new SellerWnd(username);
+                    sellerWnd.setVisible(true);
+                } else {
+                    return;
+                }
             }
         });
 

@@ -31,7 +31,7 @@ public class Auth {
     {
         String reqVal = req.get("req");
         String pwdVal = req.get("pwd");
-        String emailVal = req.get("email");
+        String emailVal = req.get("user");
         String typeVal = req.get("type");
         boolean ret = false;
         if(reqVal.equals("adduser"))

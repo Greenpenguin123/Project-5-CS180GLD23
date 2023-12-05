@@ -11,13 +11,13 @@ import java.util.Map;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-class Product {
+class ProductSeller {
     String name;
     String description;
     int quantity;
     double price;
 
-    public Product(String name, String description, int quantity, double price) {
+    public ProductSeller (String name, String description, int quantity, double price) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -25,11 +25,11 @@ class Product {
     }
 }
 
-class Store {
+class StoreSeller {
     String name;
-    List<Product> products;
+    List<ProductSeller> products;
 
-    public Store(String name) {
+    public StoreSeller(String name) {
         this.name = name;
         this.products = new ArrayList<>();
     }
@@ -163,8 +163,8 @@ public class SellerWnd extends JFrame {
 
     private void updateProductTable(String storeName) {
         productTableModel.setRowCount(0);
-        List<Product> products = CmdIO.queryStoreProduct(sellerName, storeName);
-        for (Product product : products) {
+        List<ProductSeller> products = CmdIO.queryStoreProduct(sellerName, storeName);
+        for (ProductSeller product : products) {
             productTableModel
                     .addRow(new Object[] { product.name, product.description, product.quantity, product.price });
         }
@@ -210,11 +210,11 @@ public class SellerWnd extends JFrame {
 
         Store store = stores.get(storeName);
         if (store != null) {
-            for (Product product : store.products) {
-                productNameField.setText(product.name);
-                productDescField.setText(product.description);
-                productQuantityField.setText(String.valueOf(product.quantity));
-                productPriceField.setText(String.valueOf(product.price));
+            for (StoreProduct product : store.getProducts()) {
+                productNameField.setText(product.getName());
+                productDescField.setText(product.getDescription());
+                productQuantityField.setText(String.valueOf(product.getQuantityAvailable()));
+                productPriceField.setText(String.valueOf(product.getPrice()));
             }
         }
     }

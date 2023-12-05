@@ -10,9 +10,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class CmdIO {
 
@@ -61,6 +58,35 @@ public class CmdIO {
 
         return -1;
     }
+
+    static int AddLogin(String serverAddress, int serverPort, String user, String pwd, String userType) {
+        if (connect(serverAddress, serverPort) != 0) {
+            return -1;
+        }
+
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "adduser");
+        jsonMessage.put("user", user);
+        jsonMessage.put("pwd", pwd);
+        jsonMessage.put("type", userType);
+
+
+        writer.println(jsonMessage.toJSONString());
+        try {
+            String serverResponse = reader.readLine();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            System.out.println("serverResponse:" + serverResponse);
+
+            int ret = ((Long) jsonObject.get("status")).intValue();
+            return ret;
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
 
     static List<String> queryStores(String seller) {
         JSONObject jsonMessage = new JSONObject();
@@ -150,8 +176,8 @@ public class CmdIO {
         return -1;
     }
 
-    static List<Product> queryStoreProduct(String seller, String storeName) {
-        List<Product> products = new ArrayList<>();
+    static List<ProductSeller> queryStoreProduct(String seller, String storeName) {
+        List<ProductSeller> products = new ArrayList<>();
 
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "liststoreproducts");
@@ -165,7 +191,7 @@ public class CmdIO {
 
             JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
             JSONArray jsonArray = (JSONArray) jsonObject.get("array");
-            
+
             for (Object obj : jsonArray) {
                 JSONObject jsonProduct = (JSONObject) obj;
                 String prodName = (String)jsonProduct.get("product");
@@ -173,7 +199,7 @@ public class CmdIO {
                 int quantity = ((Long)jsonProduct.get("quantity")).intValue();
                 double price = (double)jsonProduct.get("price");
 
-                Product prod = new Product(prodName, description, (int) price,  quantity);
+                ProductSeller prod = new ProductSeller(prodName, description, quantity, price);
                 products.add(prod);
             }
         } catch (IOException | ParseException e) {
@@ -181,6 +207,38 @@ public class CmdIO {
         }
         return products;
     }
+    /*
+    static List<BrowseProduct> searchProduct(String keywords) {
+        List<BrowseProduct> products = new ArrayList<>();
 
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "searchproduct");
+        jsonMessage.put("keywords", keywords);
+
+        writer.println(jsonMessage.toJSONString());
+        try {
+            String serverResponse = reader.readLine();
+            System.out.println("serverResponse:" + serverResponse);
+
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            JSONArray jsonArray = (JSONArray) jsonObject.get("array");
+
+            for (Object obj : jsonArray) {
+                JSONObject jsonProduct = (JSONObject) obj;
+                String seller = (String)jsonProduct.get("seller");
+                String store = (String)jsonProduct.get("store");
+                String prodName = (String)jsonProduct.get("product");
+                String description = (String)jsonProduct.get("description");
+                int quantity = ((Long)jsonProduct.get("quantity")).intValue();
+                double price = (double)jsonProduct.get("price");
+
+                BrowseProduct prod = new BrowseProduct(seller, store, prodName, description, quantity, price);
+                products.add(prod);
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return products;
+    }*/
 
 }

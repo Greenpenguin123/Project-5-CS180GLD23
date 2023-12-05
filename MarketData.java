@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 class Store {
     private String name;
-    private List<Product> products;
+    private List<StoreProduct> products;
     private Set<String> productNames; // To ensure unique product names
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -26,11 +26,11 @@ class Store {
         return name;
     }
 
-    public List<Product> getProducts() {
+    public List<StoreProduct> getProducts() {
         return products;
     }
 
-    public int addProduct(Product product) {
+    public int addProduct(StoreProduct product) {
         lock.writeLock().lock();
         try {
             if (productNames.contains(product.getName())) {
@@ -52,7 +52,7 @@ class Store {
             jsonStore.put("name", name);
 
             JSONArray jsonProducts = new JSONArray();
-            for (Product product : products) {
+            for (StoreProduct product : products) {
                 jsonProducts.add(product.toJSON());
             }
             jsonStore.put("products", jsonProducts);
@@ -88,7 +88,7 @@ class ErrorcodeMap {
     }
 }
 
-public class MarketData implements IMarketData {
+public class MarketData {
 
     private final String DATA_FILE = "market_data.json";
     private final JSONParser jsonParser = new JSONParser();
@@ -98,18 +98,14 @@ public class MarketData implements IMarketData {
 
     private ILog log;
 
-    MarketData(ILog log)
-    {
+    MarketData(ILog log) {
         this.log = log;
     }
 
-    @Override
-    public int AddStore(String seller, String storeName)
-    {
+    public int AddStore(String seller, String storeName) {
         lock.writeLock().lock();
         try {
-            if(storeNames.contains(storeName))
-            {
+            if (storeNames.contains(storeName)) {
                 return -2;
             }
             storeNames.add(storeName);
@@ -122,7 +118,6 @@ public class MarketData implements IMarketData {
         }
     }
 
-    @Override
     public int AddProduct(String seller, String storeName, String productName, String description, int quantity, double price) {
         lock.writeLock().lock();
         try {
@@ -133,19 +128,17 @@ public class MarketData implements IMarketData {
 
             Store store = findStoreByName(stores, storeName);
             if (store != null) {
-                Product product = new Product(productName, description, quantity, price);
+                StoreProduct product = new StoreProduct(productName, description, price, quantity);
                 return store.addProduct(product);
             } else {
                 return -3;
             }
-        }
-        finally {
+        } finally {
             lock.writeLock().unlock();
         }
     }
 
-    @Override
-    public List<productBrowseResult> BrowseProduct(String seachKeyWords){
+    public List<productBrowseResult> BrowseProduct(String seachKeyWords) {
 
         List<productBrowseResult> resultSet = new ArrayList<>();
         lock.readLock().lock();
@@ -154,10 +147,10 @@ public class MarketData implements IMarketData {
                 String seller = entry.getKey();
                 List<Store> stores = ownerStoresMap.get(entry.getKey());
                 for (Store store : stores) {
-                    for (Product product : store.getProducts()) {
-                        if(product.getName().contains(seachKeyWords) || product.getDescription().contains(seachKeyWords)) {
+                    for (StoreProduct product : store.getProducts()) {
+                        if (product.getName().contains(seachKeyWords) || product.getDescription().contains(seachKeyWords)) {
                             productBrowseResult productResult = new productBrowseResult(seller, store.getName(), product.getName(),
-                                    product.getDescription(), product.getQuantity(), product.getPrice());
+                                    product.getDescription(), product.getQuantityAvailable(), product.getPrice());
                             resultSet.add(productResult);
                         }
                     }
@@ -165,34 +158,28 @@ public class MarketData implements IMarketData {
             }
 
             return resultSet;
-        }
-        finally {
+        } finally {
             lock.readLock().unlock();
         }
     }
 
-    @Override
-    public int BuyProduct(String seller, String storeName, String productName, int quantity, double price)
-    {
+    public int BuyProduct(String seller, String storeName, String productName, int quantity, double price) {
         lock.writeLock().lock();
         try {
             List<Store> stores = ownerStoresMap.get(seller);
             for (Store store : stores) {
-                if(store.getName().equals(storeName))
-                {
-                    for (Product product : store.getProducts()) {
-                        if(product.getName().equals(productName)) {
-                            if(product.getQuantity() < quantity)
-                            {
+                if (store.getName().equals(storeName)) {
+                    for (StoreProduct product : store.getProducts()) {
+                        if (product.getName().equals(productName)) {
+                            if (product.getQuantityAvailable() < quantity) {
                                 return -5;
                             }
 
-                            if(product.getPrice() > price)
-                            {
+                            if (product.getPrice() > price) {
                                 return -6;
                             }
 
-                            product.SetQuantity(product.getQuantity() - quantity);
+                            product.setQuantityAvailable(product.getQuantityAvailable() - quantity);
 
                             saveData();
                         }
@@ -200,8 +187,7 @@ public class MarketData implements IMarketData {
                 }
             }
             return 0;
-        }
-        finally {
+        } finally {
             lock.writeLock().unlock();
         }
 
@@ -226,4 +212,5 @@ public class MarketData implements IMarketData {
         }
         return null;
     }
+}
 

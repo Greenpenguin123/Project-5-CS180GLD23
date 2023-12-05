@@ -28,9 +28,8 @@ public class loginsession {
     void process(Request req, PrintWriter out)
     {
         String reqVal = req.get("req");
-        String usrVal = req.get("name");
         String pwdVal = req.get("pwd");
-        String emailVal = req.get("email");
+        String emailVal = req.get("user");
         String typeVal = req.get("type");
         boolean ret = false;
         if (reqVal.equals("removeuser"))

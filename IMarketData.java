@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-
+/*
 public interface IMarketData {
     ArrayList<Product> viewMarketPlace();
     void searchProducts(ArrayList<Product> products, Scanner input);
@@ -13,4 +13,4 @@ public interface IMarketData {
     void sortDashboard(Scanner input);
     void showDescription(int selectedProduct, Scanner scanner);
     ArrayList<String> printCart();
-}
+}*/

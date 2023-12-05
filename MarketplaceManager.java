@@ -2,7 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-
+/*
 public class MarketplaceManager {
     private static final String MARKETPLACE_FILE = "MarketPlace.csv";
     private ArrayList<Product> productList;
@@ -30,4 +30,4 @@ public class MarketplaceManager {
     public static void main(String[] args) {
 
     }
-}
+}*/

@@ -3,7 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+/*
 public class Consumer {
     private String userName;
     private String cartFile;
@@ -324,7 +324,7 @@ public class Consumer {
 
                         for (StoreSales sales : storeSalesList) {
                             System.out.println("Store: " + sales.getStoreName() + ", Products Sold: " + sales.getTotalItemsSold());
-                        }*/
+                        }
                         cont = false;
                     }
                     case 2 -> {
@@ -519,4 +519,4 @@ public class Consumer {
         //c.addProduct(productList.get(0));
         //c.removeProduct(productList.get(0).getName());
     }
-}
+}*/

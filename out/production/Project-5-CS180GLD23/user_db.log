@@ -23,3 +23,7 @@ User: null, Action: [AddUser buyer], Message: User email exists
 User: null, Action: [AddUser buyer], Message: User email exists
 User: null, Action: [AddUser buyer], Message: User email exists
 User: null, Action: [AddUser buyer], Message: User email exists
+User: asdf@outlook.com, Action: [AddUser buyer], Message: Success
+User: null, Action: [login], Message: User not found or incorrect credentials
+User: null, Action: [login], Message: User not found or incorrect credentials
+User: null, Action: [login], Message: User not found or incorrect credentials
