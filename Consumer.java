@@ -3,7 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
-/*
+
 public class Consumer {
     private String userName;
     private String cartFile;
@@ -318,7 +318,7 @@ public class Consumer {
                 switch (choice) {
                     case 1 -> {
                         StoreplaceManager.calculateItemsPurchased();
-                        /*storeSalesList = viewStoresByProductsSold(products);
+                        storeSalesList = viewStoresByProductsSold(products);
                         // Display the results
                         System.out.println("Stores by Number of Products Sold:");
 
@@ -519,4 +519,4 @@ public class Consumer {
         //c.addProduct(productList.get(0));
         //c.removeProduct(productList.get(0).getName());
     }
-}*/
+}

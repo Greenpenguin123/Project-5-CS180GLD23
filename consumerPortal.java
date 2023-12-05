@@ -1,4 +1,9 @@
-private void openConsumerPortal(String userName) {
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class consumerPortal extends JFrame {
+    private void openConsumerPortal(String userName) {
         Consumer consumer = new Consumer(userName);
 
         JFrame consumerFrame = new JFrame(userName + "'s Consumer Portal");
@@ -95,3 +100,5 @@ private void openConsumerPortal(String userName) {
 
         consumerFrame.setVisible(true);
     }
+
+}

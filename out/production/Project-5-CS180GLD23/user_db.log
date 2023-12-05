@@ -27,3 +27,6 @@ User: asdf@outlook.com, Action: [AddUser buyer], Message: Success
 User: null, Action: [login], Message: User not found or incorrect credentials
 User: null, Action: [login], Message: User not found or incorrect credentials
 User: null, Action: [login], Message: User not found or incorrect credentials
+User: asdf@gmail.com, Action: [login], Message: User not found or incorrect credentials
+User: asdf@gmail.com, Action: [AddUser seller], Message: Success
+User: asdf@gmail.com, Action: [AddUser seller], Message: User email exists
