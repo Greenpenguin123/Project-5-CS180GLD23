@@ -1,16 +1,18 @@
-import org.json.simple.JSONObject;
+import java.io.*;
+import java.net.*;
 
-import java.io.BufferedReader;
-import java.io.PrintWriter;
+import org.json.simple.JSONObject;
 
 public class Auth {
     private ILog log;
     UserManager userData;
+    IMarketData marketData;
 
-    Auth(ILog ilog, UserManager userdata)
+    Auth(ILog ilog, UserManager userdata, IMarketData marketData)
     {
         log = ilog;
         this.userData = userdata;
+        this.marketData = marketData;
     }
 
     loginsession RunReq(BufferedReader in, PrintWriter out)
@@ -27,17 +29,17 @@ public class Auth {
         return session;
     }
 
-    loginsession process(Request req, PrintWriter out)
+    loginsession process(Request req, PrintWriter out )
     {
         String reqVal = req.get("req");
+        String usrVal = req.get("user");
         String pwdVal = req.get("pwd");
-        String emailVal = req.get("user");
         String typeVal = req.get("type");
         boolean ret = false;
         if(reqVal.equals("adduser"))
         {
 
-            ret = userData.addUser(emailVal, pwdVal, typeVal);
+            ret = userData.addUser(usrVal, pwdVal, typeVal);
             JSONObject jsonMessage = new JSONObject();
             ReturnResult(ret?0:-1, ret?"":"Add user failed", out);
             return null;
@@ -45,11 +47,11 @@ public class Auth {
 
         if(reqVal.equals("login"))
         {
-            ret = userData.verifyUser(emailVal, pwdVal, typeVal);
+            ret = userData.verifyUser(usrVal, pwdVal, typeVal);
             ReturnResult(ret?0:-2, ret?"":"login user failed", out);
             if(ret)
             {
-                return new loginsession(emailVal, typeVal, userData);
+                return new loginsession(usrVal, typeVal, userData, marketData);
             }
         }
 

@@ -24,6 +24,34 @@ public class Request {
         return null;
     }
 
+    int get_int(String property)
+    {
+        if(jsonObj.containsKey(property))
+        {
+            try{
+                //String val = jsonObj.get(property);
+                int iVal = ((Long)jsonObj.get(property)).intValue();
+
+                return iVal;
+            } catch(Exception e)
+            {
+                e.printStackTrace();;
+            }
+        }
+
+        return 0;
+    }
+
+    double get_double(String property)
+    {
+        if(jsonObj.containsKey(property))
+        {
+            return ((double)jsonObj.get(property));
+        }
+
+        return 0.0;
+    }
+
     static Request ReadReq(BufferedReader in)
     {
         JSONParser jsonParser = new JSONParser();

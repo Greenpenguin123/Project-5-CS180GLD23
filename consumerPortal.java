@@ -1,4 +1,12 @@
-private void openConsumerPortal(String userName) {
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+
+public class consumerPortal {
+    public static void openComsumerPortal(String username) {
+    }
+
+    private void openConsumerPortal(String userName) {
         Consumer consumer = new Consumer(userName);
 
         JFrame consumerFrame = new JFrame(userName + "'s Consumer Portal");
@@ -14,6 +22,7 @@ private void openConsumerPortal(String userName) {
         // Button to add a product
         JButton addProductButton = new JButton("Add Product to Cart");
         addProductButton.addActionListener(e -> {
+            /*
             ArrayList<Product> products = consumer.returnProductList();
             String[] productNames = new String[products.size()];
 
@@ -34,11 +43,11 @@ private void openConsumerPortal(String userName) {
                         break;
                     }
                 }
-            }
+            }*/
         });
         JButton removeProductButton = new JButton("Remove Product from Cart");
         removeProductButton.addActionListener(e -> {
-            ArrayList<String> cartItems = consumer.getCartList();
+            /*ArrayList<String> cartItems = consumer.getCartList();
             String[] productNames = new String[cartItems.size()];
 
             for (int i = 0; i < cartItems.size(); i++) {
@@ -54,7 +63,7 @@ private void openConsumerPortal(String userName) {
             if (selectedProductName != null && !selectedProductName.isEmpty()) {
                 consumer.removeProduct(selectedProductName);
                 JOptionPane.showMessageDialog(null, "Product removed from cart successfully.", "Product Removed", JOptionPane.INFORMATION_MESSAGE);
-            }
+            }*/
         });
 
         // Button to view cart
@@ -95,3 +104,4 @@ private void openConsumerPortal(String userName) {
 
         consumerFrame.setVisible(true);
     }
+}
