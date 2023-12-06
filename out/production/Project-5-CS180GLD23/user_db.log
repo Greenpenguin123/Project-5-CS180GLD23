@@ -41,3 +41,54 @@ User: , Action: [AddUser seller], Message: Invalid email or password format
 User: , Action: [AddUser seller], Message: Invalid email or password format
 User: asdf@gmail.com, Action: [AddUser seller], Message: User email exists
 User: asdf@gmail.com, Action: [AddUser seller], Message: User email exists
+User: sys, Action: loadMarketata, Message: failed
+User: sys, Action: loadSalesData, Message: failed
+User: sys, Action: loadMarketata, Message: failed
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: Store2
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: [login], Message: User not found or incorrect credentials
+User: asdf@gmail.com, Action: [AddUser buyer], Message: Success
+User: asdf@gmail.com, Action: [AddUser seller], Message: User email exists
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1

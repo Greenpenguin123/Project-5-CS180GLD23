@@ -665,5 +665,4 @@ public class MarketData implements IMarketData {
         }
         return false;
     }
-
 }

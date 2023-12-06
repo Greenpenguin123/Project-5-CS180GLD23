@@ -159,7 +159,7 @@ public class SellerWnd extends JFrame {
          * });
          */
 
-        //refreshStoreList();
+        refreshStoreList();
     }
 
     private void updateProductTable(String storeName) {
