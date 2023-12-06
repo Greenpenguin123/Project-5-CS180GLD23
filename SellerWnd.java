@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+// for server
 class ProductSeller {
     String name;
     String description;
@@ -43,7 +44,7 @@ public class SellerWnd extends JFrame {
     private JTable productListTable;
     // private JComboBox<String> storeComboBox;
 
-    private Map<String, Store> stores;
+    private Map<String, StoreSeller> stores;
 
     private String sellerName;
 
@@ -207,16 +208,16 @@ public class SellerWnd extends JFrame {
         productDescField.setText("");
         productQuantityField.setText("");
         productPriceField.setText("");
-
-        Store store = stores.get(storeName);
+        /*
+        StoreSeller store = stores.get(storeName);
         if (store != null) {
-            for (StoreProduct product : store.getProducts()) {
+            for (ProductSeller product : store) {
                 productNameField.setText(product.getName());
                 productDescField.setText(product.getDescription());
                 productQuantityField.setText(String.valueOf(product.getQuantityAvailable()));
                 productPriceField.setText(String.valueOf(product.getPrice()));
             }
-        }
+        }*/
     }
 
     private void addProduct() {

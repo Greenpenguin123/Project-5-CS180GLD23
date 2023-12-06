@@ -74,33 +74,26 @@ public class LoginWnd extends JFrame {
                 int ret = CmdIO.Login(serverAddress, port, username, password, userType);
 
                 if (ret == 0) {
-                    statusTextArea.setText("Login Successful as " + userType + "!");
+                    JOptionPane.showMessageDialog(LoginWnd.this, "Login Successful as " + userType + "!");
                 } else {
-                    statusTextArea.setText("Login failed as " + userType + "!");
+                    JOptionPane.showMessageDialog(LoginWnd.this, "Login unsuccessful as " + userType + "!");
                     return;
                 }
 
                 if (userType.equals("seller")) {
-                    dispose();
-                    SellerWnd sellerWnd = new SellerWnd(username);
-                    sellerWnd.setVisible(true);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Close the login window
+                            dispose();
+                            SellerWnd sellerWnd = new SellerWnd(username);
+                            sellerWnd.setVisible(true);
+                        }
+                    });
                 } else {
                     dispose();
-                    return;
+                    consumerPortal.openComsumerPortal(username);
                 }
-                // Launch another frame window (replace MyOtherFrame with your actual frame
-                // class)
-
-                /*
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Close the login window
-                        dispose();
-                        SellerWnd sellerWnd = new SellerWnd(username);
-                        sellerWnd.setVisible(true);
-                    }
-                });*/
             }
         });
 
@@ -115,18 +108,11 @@ public class LoginWnd extends JFrame {
 
                 int ret = CmdIO.AddLogin(serverAddress, port, username, password, userType);
                 if (ret == 0) {
-                    statusTextArea.setText("Accounted created successfully as " + userType + "!");
+                    JOptionPane.showMessageDialog(LoginWnd.this, "Account creation successful as " + userType + "!");
                 } else {
-                    statusTextArea.setText("Account created failed as " + userType + "!");
-                    return;
+                    JOptionPane.showMessageDialog(LoginWnd.this, "Account creation unsuccessful as " + userType + "!");
                 }
-
-                if (userType.equals("seller")) {
-                    SellerWnd sellerWnd = new SellerWnd(username);
-                    sellerWnd.setVisible(true);
-                } else {
-                    return;
-                }
+                return;
             }
         });
 
