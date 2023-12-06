@@ -31,3 +31,7 @@ User: asdf@gmail.com, Action: [login], Message: User not found or incorrect cred
 User: asdf@gmail.com, Action: [AddUser seller], Message: Success
 User: asdf@gmail.com, Action: [AddUser seller], Message: User email exists
 User: localhost2@gmail.com, Action: [AddUser buyer], Message: Success
+User: locahost2@gmail.com, Action: [login], Message: User not found or incorrect credentials
+User: locahost@gmail.com, Action: [login], Message: User not found or incorrect credentials
+User: locahost@gmail.com, Action: [login], Message: User not found or incorrect credentials
+User: locahost@gmail.com, Action: [AddUser buyer], Message: Success

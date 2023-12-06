@@ -93,6 +93,7 @@ public class LoginWnd extends JFrame {
                 } else {
                     dispose();
                     consumerPortal.openConsumerPortal(username);
+
                 }
             }
         });
@@ -102,7 +103,9 @@ public class LoginWnd extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String serverAddress = "localhost";
                 int port = 5432;
-                String username = usernameField.getText();
+                String email = usernameField.getText();
+                String[] parts = email.split("@");
+                String username = parts[0];
                 String password = new String(passwordField.getPassword());
                 String userType = sellerRadioButton.isSelected() ? "seller" : "buyer";
 

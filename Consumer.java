@@ -30,7 +30,7 @@ public class Consumer {
         return productList;
     }
 
-    public static void viewMarketPlace() {
+    public static synchronized void viewMarketPlace() {
         ArrayList<Product> products = getProductList();
         String productListText = "";
 
@@ -42,7 +42,7 @@ public class Consumer {
         JOptionPane.showMessageDialog(null, productListText, "Market Place", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private static ArrayList<Product> getProductList() {
+    private static synchronized ArrayList<Product> getProductList() {
         ArrayList<Product> products = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader("MarketPlace.csv"))) {
@@ -67,7 +67,7 @@ public class Consumer {
 
 
 
-    public static void searchProducts(ArrayList<Product> products) {
+    public static synchronized void searchProducts(ArrayList<Product> products) {
         try {
             String keyword = JOptionPane.showInputDialog("What would you like to search?");
             String searchResults = "";
@@ -91,7 +91,7 @@ public class Consumer {
         }
     }
 
-    public void addProduct(Product product) {
+    public synchronized void addProduct(Product product) {
         try (FileWriter fw = new FileWriter(cartFile, true);
              BufferedWriter bw = new BufferedWriter(fw)) {
 
@@ -107,7 +107,7 @@ public class Consumer {
         }
     }
 
-    public void removeProduct(String productName) { //removes every instance of that product
+    public synchronized void removeProduct(String productName) { //removes every instance of that product
         File inputFile = new File(cartFile);
         File tempFile = new File("tempCart.csv");
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
@@ -144,7 +144,7 @@ public class Consumer {
             System.out.println("Could not delete the temporary file");
         }
     }
-    public void printPurchaseHistory() {
+    public synchronized void printPurchaseHistory() {
         String history = "";
         String filePath = purchaseHistoryFile;
 
@@ -164,7 +164,7 @@ public class Consumer {
 
         JOptionPane.showMessageDialog(null, history, "Purchase History", JOptionPane.INFORMATION_MESSAGE);
     }
-    public void purchaseProduct() {
+    public synchronized void purchaseProduct() {
         boolean purchaseSuccessful = true;
 
         try (BufferedReader br = new BufferedReader(new FileReader(cartFile));
@@ -202,7 +202,7 @@ public class Consumer {
         }
     }
 
-    private void updateMarketplaceFile() {
+    private synchronized void updateMarketplaceFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("MarketPlace.csv"))) {
             writer.write("Name,Description,Store,Price,Quantity Available\n");
             for (Product product : productList) {
@@ -218,7 +218,7 @@ public class Consumer {
         }
     }
 
-    private void recordPurchaseHistory(Product product, int quantity) {
+    private synchronized void recordPurchaseHistory(Product product, int quantity) {
         String timeStamp = new SimpleDateFormat("MM/dd/yyyy HH:mm").format(new Date());
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(purchaseHistoryFile, true))) {
             bw.write(timeStamp + "," + product.getName() + "," + product.getDescription() + "," + product.getStore() + "," + product.getPrice() + "," + quantity + "\n");
@@ -226,7 +226,7 @@ public class Consumer {
             System.err.println("Error while recording purchase history: " + e.getMessage());
         }
     }
-    private Product findProduct(String name, String description, String store) {
+    private synchronized Product findProduct(String name, String description, String store) {
         for (Product product : productList) {
             if (product.getName().equals(name) &&
                     product.getDescription().equals(description) &&
@@ -237,7 +237,7 @@ public class Consumer {
         return null;
     }
 
-    public void clearCart() {
+    public synchronized void clearCart() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(cartFile))) {
             pw.print("");
         } catch (IOException e) {
@@ -245,7 +245,7 @@ public class Consumer {
         }
     }
 
-    public static void sortMarketPlaceGUI(ArrayList<Product> products) {
+    public synchronized static void sortMarketPlaceGUI(ArrayList<Product> products) {
         // Ask the user to choose the sorting criteria
         String[] criteriaOptions = {"Price", "Quantity"};
         String criteriaChoice = (String) JOptionPane.showInputDialog(null,
@@ -289,7 +289,7 @@ public class Consumer {
         JOptionPane.showMessageDialog(null, scrollPane, "Sorted Products", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void exportPurchaseHistoryGUI() {
+    public synchronized void exportPurchaseHistoryGUI() {
         File inputFile = new File(purchaseHistoryFile);
         File outputFile = new File(userName + "_PurchaseHistoryExport.csv");
 
@@ -309,7 +309,7 @@ public class Consumer {
             JOptionPane.showMessageDialog(null, "Error while exporting purchase history: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    public void viewDashboardGUI(ArrayList<Product> products) {
+    public synchronized void viewDashboardGUI(ArrayList<Product> products) {
         boolean validInput = false;
         while (!validInput) {
             String optionsMessage = "Select an option for dashboard view:\n"
@@ -355,7 +355,7 @@ public class Consumer {
         }
     }
 
-    public void sortDashboardGUI() {
+    public synchronized void sortDashboardGUI() {
         ArrayList<StoreSales> storeSalesList = viewStoresByProductsSold(productList);
         ArrayList<StorePurchaseData> storePurchases = viewStoresByYourPurchases();
 
@@ -401,7 +401,7 @@ public class Consumer {
         }
     }
 
-    private ArrayList<StoreSales> viewStoresByProductsSold(ArrayList<Product> products) {
+    private synchronized ArrayList<StoreSales> viewStoresByProductsSold(ArrayList<Product> products) {
         ArrayList<StoreSales> storeSalesList = new ArrayList<>();
 
         for (Product product : products) {
@@ -420,7 +420,7 @@ public class Consumer {
     }
 
 
-    private static StoreSales findStoreSales (ArrayList<StoreSales> list, String storeName) {
+    private synchronized static StoreSales findStoreSales (ArrayList<StoreSales> list, String storeName) {
         for (StoreSales sales : list) {
             if (sales.getStoreName().equals(storeName)) {
                 return sales;
@@ -430,7 +430,7 @@ public class Consumer {
     }
 
 
-    private ArrayList<StorePurchaseData> viewStoresByYourPurchases() {
+    private synchronized ArrayList<StorePurchaseData> viewStoresByYourPurchases() {
         ArrayList<StorePurchaseData> storePurchases = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(purchaseHistoryFile))) {
@@ -454,7 +454,7 @@ public class Consumer {
 
         return storePurchases;
     }
-    private static StorePurchaseData findStoreData(ArrayList<StorePurchaseData> list, String storeName) {
+    private synchronized static StorePurchaseData findStoreData(ArrayList<StorePurchaseData> list, String storeName) {
         for (StorePurchaseData data : list) {
             if (data.getStoreName().equals(storeName)) {
                 return data;
@@ -463,7 +463,7 @@ public class Consumer {
         return null;
     }
 
-    public static void showDescriptionGUI(ArrayList<Product> productList) {
+    public synchronized static void showDescriptionGUI(ArrayList<Product> productList) {
         String input = JOptionPane.showInputDialog("Enter the product number to view its description:");
         try {
             int selectedProduct = Integer.parseInt(input);
@@ -488,7 +488,7 @@ public class Consumer {
         }
     }
 
-    public void printCart() {
+    public synchronized void printCart() {
         ArrayList<String> cartItems = new ArrayList<>();
         String cartContents = "";
 
@@ -514,7 +514,7 @@ public class Consumer {
     }
 
 
-    public ArrayList<String> getCartList() {
+    public synchronized ArrayList<String> getCartList() {
         ArrayList<String> cartItems = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(cartFile))) {
@@ -526,6 +526,13 @@ public class Consumer {
             e.printStackTrace();
         }
         return cartItems;
+    }
+
+    public void reloadData() {
+        // Reload data from file
+        // For example, re-read the productList from file
+        productList = getProductList();
+        //System.out.println("Data reloaded.");
     }
 
         public static void main(String[] args) { //For Testing

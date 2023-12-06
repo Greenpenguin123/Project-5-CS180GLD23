@@ -1,10 +1,16 @@
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class consumerPortal extends JFrame {
     public static void openConsumerPortal(String userName) {
         Consumer consumer = new Consumer(userName);
+        Path pathToWatch = Paths.get("/Users/sameermurthy/Library/Mobile Documents/com~apple~CloudDocs/Documents/Purdue /1st year/Project-5-CS180GLD23");
+        FileWatcher watcher = new FileWatcher(pathToWatch, consumer);
+        Thread watcherThread = new Thread(watcher);
+        watcherThread.start();
 
         JFrame consumerFrame = new JFrame(userName + "'s Consumer Portal");
         int rows = 4; // Adjust the number of rows as needed
