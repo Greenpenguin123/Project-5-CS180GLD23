@@ -92,7 +92,7 @@ public class LoginWnd extends JFrame {
                     });
                 } else {
                     dispose();
-                    consumerPortal.openComsumerPortal(username);
+                    consumerPortal.openConsumerPortal(username);
                 }
             }
         });
