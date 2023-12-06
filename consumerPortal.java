@@ -3,11 +3,13 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class consumerPortal extends JFrame {
-    private void openConsumerPortal(String userName) {
+    public static void openConsumerPortal(String userName) {
         Consumer consumer = new Consumer(userName);
 
         JFrame consumerFrame = new JFrame(userName + "'s Consumer Portal");
-        consumerFrame.setLayout(new FlowLayout());
+        int rows = 4; // Adjust the number of rows as needed
+        int cols = 3; // Adjust the number of columns as needed
+        consumerFrame.setLayout(new GridLayout(rows, cols));
         consumerFrame.setSize(600, 400);
         consumerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -16,6 +18,7 @@ public class consumerPortal extends JFrame {
         viewMarketButton.addActionListener(e -> {
             Consumer.viewMarketPlace();
         });
+
         // Button to add a product
         JButton addProductButton = new JButton("Add Product to Cart");
         addProductButton.addActionListener(e -> {
@@ -41,6 +44,7 @@ public class consumerPortal extends JFrame {
                 }
             }
         });
+
         JButton removeProductButton = new JButton("Remove Product from Cart");
         removeProductButton.addActionListener(e -> {
             ArrayList<String> cartItems = consumer.getCartList();
@@ -79,13 +83,49 @@ public class consumerPortal extends JFrame {
         JButton purchaseHistoryButton = new JButton("View Purchase History");
         purchaseHistoryButton.addActionListener(e -> {
             consumer.printPurchaseHistory();
-            // Display purchase history in a new window or a dialog
         });
 
         //button to signout
         JButton signOutButton = new JButton("SignOut");
         signOutButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(null, "Signed-out successfully.", "signout", JOptionPane.INFORMATION_MESSAGE);
+            consumerFrame.dispose();
+        });
+
+        //button for search
+        JButton searchProductsButton = new JButton("Search Products");
+        searchProductsButton.addActionListener(e -> {
+            consumer.searchProducts(consumer.returnProductList());
+        });
+
+        //button for sort
+        JButton sortMarketplaceButton = new JButton("Sort MarketPlace");
+        sortMarketplaceButton.addActionListener(e -> {
+            consumer.sortMarketPlaceGUI(consumer.returnProductList());
+        });
+
+        //button for exporting purchase history
+        JButton exportPurchaseHistoryButton = new JButton("Export Purchase History");
+        exportPurchaseHistoryButton.addActionListener(e -> {
+            consumer.exportPurchaseHistoryGUI();
+        });
+
+        //button to view dashboard
+        JButton viewDashBoardButton = new JButton("View Seller Dashboard");
+        viewDashBoardButton.addActionListener(e -> {
+            consumer.viewDashboardGUI(consumer.returnProductList());
+        });
+
+        //button to sort dashboard
+        JButton sortDashBoardButton = new JButton("Sort Seller Dashboard");
+        sortDashBoardButton.addActionListener(e -> {
+            consumer.sortDashboardGUI();
+        });
+
+        //button to show description
+        JButton showDescriptionButton = new JButton("Show Description");
+        showDescriptionButton.addActionListener(e -> {
+            Consumer.showDescriptionGUI(consumer.returnProductList());
         });
 
 
@@ -96,9 +136,19 @@ public class consumerPortal extends JFrame {
         consumerFrame.add(viewCartButton);
         consumerFrame.add(purchaseButton);
         consumerFrame.add(purchaseHistoryButton);
+        consumerFrame.add(searchProductsButton);
+        consumerFrame.add(sortMarketplaceButton);
+        consumerFrame.add(exportPurchaseHistoryButton);
+        consumerFrame.add(viewDashBoardButton);
+        consumerFrame.add(sortDashBoardButton);
+        consumerFrame.add(showDescriptionButton);
         consumerFrame.add(signOutButton);
 
         consumerFrame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        openConsumerPortal("sampleUser123");
     }
 
 }

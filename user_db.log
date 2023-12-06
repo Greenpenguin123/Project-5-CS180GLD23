@@ -30,3 +30,4 @@ User: null, Action: [login], Message: User not found or incorrect credentials
 User: asdf@gmail.com, Action: [login], Message: User not found or incorrect credentials
 User: asdf@gmail.com, Action: [AddUser seller], Message: Success
 User: asdf@gmail.com, Action: [AddUser seller], Message: User email exists
+User: localhost2@gmail.com, Action: [AddUser buyer], Message: Success

@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -8,7 +9,7 @@ public class Consumer {
     private String userName;
     private String cartFile;
     private String purchaseHistoryFile;
-    public static ArrayList<Product> productList = getProductList();
+    private static ArrayList<Product> productList = getProductList();
 
     public Consumer(String userName)  {
         this.userName = userName;
@@ -25,16 +26,22 @@ public class Consumer {
         }
     }
 
-    public static ArrayList<Product> viewMarketPlace() {
-        ArrayList<Product> products;
-        products = getProductList();
-        int i  = 1;
-        for (Product product : products) {
-            System.out.println(i + ". " + product);
-            i++;
-        }
-        return products;
+    public ArrayList<Product> returnProductList() {
+        return productList;
     }
+
+    public static void viewMarketPlace() {
+        ArrayList<Product> products = getProductList();
+        String productListText = "";
+
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            productListText += (i + 1) + ". " + product.toString() + "\n";
+        }
+
+        JOptionPane.showMessageDialog(null, productListText, "Market Place", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private static ArrayList<Product> getProductList() {
         ArrayList<Product> products = new ArrayList<>();
 
@@ -58,25 +65,29 @@ public class Consumer {
         return products;
     }
 
-    public static void searchProducts(ArrayList<Product> products, Scanner input) {
-        ArrayList<Product> matchedProducts = new ArrayList<>();
-        System.out.println("What would you like to search?");
-        String keyword = input.nextLine();
 
-        for (Product product : products) {
-            if (product.getName().toLowerCase().contains(keyword.toLowerCase()) ||
-                    product.getDescription().toLowerCase().contains(keyword.toLowerCase()) ||
-                    product.getStore().toLowerCase().contains(keyword.toLowerCase())) {
-                matchedProducts.add(product);
-            }
-        }
 
-        if (matchedProducts.isEmpty()) {
-            System.out.println("No products found matching your search.");
-        } else {
-            for (Product product : matchedProducts) {
-                System.out.println(product);
+    public static void searchProducts(ArrayList<Product> products) {
+        try {
+            String keyword = JOptionPane.showInputDialog("What would you like to search?");
+            String searchResults = "";
+
+            for (Product product : products) {
+                if (product.getName().toLowerCase().contains(keyword.toLowerCase()) ||
+                        product.getDescription().toLowerCase().contains(keyword.toLowerCase()) ||
+                        product.getStore().toLowerCase().contains(keyword.toLowerCase())) {
+                    searchResults += product.toString() + "\n";
+                }
             }
+
+            if (searchResults.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No products found matching your search.", "Search", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, searchResults, "Search Results", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (NullPointerException e) {
+            JOptionPane.showMessageDialog(null, "Cancel or X Pressed",
+                        "Search Product", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -92,7 +103,7 @@ public class Consumer {
 
             bw.write(line);
         } catch (IOException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Log the exception
         }
     }
 
@@ -134,6 +145,7 @@ public class Consumer {
         }
     }
     public void printPurchaseHistory() {
+        String history = "";
         String filePath = purchaseHistoryFile;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -141,13 +153,16 @@ public class Consumer {
             int lineNumber = 1;
 
             while ((line = reader.readLine()) != null) {
-                System.out.println(lineNumber + ". " + line);
+                history += lineNumber + ". " + line + "\n";
                 lineNumber++;
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("An error occurred while reading the file.");
+            JOptionPane.showMessageDialog(null, "An error occurred while reading the file.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        JOptionPane.showMessageDialog(null, history, "Purchase History", JOptionPane.INFORMATION_MESSAGE);
     }
     public void purchaseProduct() {
         boolean purchaseSuccessful = true;
@@ -179,9 +194,9 @@ public class Consumer {
         }
 
         if (purchaseSuccessful) {
-            System.out.println("Thank You For Purchasing!");
             updateMarketplaceFile();
-            clearCart(); // Clear the cart after successful purchase
+            clearCart();
+            JOptionPane.showMessageDialog(null, "Purchase Successful", "Purchase Product", JOptionPane.INFORMATION_MESSAGE);
         } else {
             System.out.println("Purchase partially successful or failed.");
         }
@@ -222,17 +237,6 @@ public class Consumer {
         return null;
     }
 
-
-    private void replaceMarketplaceFileWithTemp(File tempFile) {
-        File marketplaceFile = new File("MarketPlace.csv");
-        if (tempFile.renameTo(marketplaceFile)) {
-            System.out.println("Marketplace file updated successfully.");
-        } else {
-            System.out.println("Failed to update Marketplace file.");
-        }
-    }
-
-
     public void clearCart() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(cartFile))) {
             pw.print("");
@@ -241,48 +245,51 @@ public class Consumer {
         }
     }
 
+    public static void sortMarketPlaceGUI(ArrayList<Product> products) {
+        // Ask the user to choose the sorting criteria
+        String[] criteriaOptions = {"Price", "Quantity"};
+        String criteriaChoice = (String) JOptionPane.showInputDialog(null,
+                "Would you like to sort by price or quantity?",
+                "Sort Criteria", JOptionPane.QUESTION_MESSAGE, null,
+                criteriaOptions, criteriaOptions[0]);
 
-    private void updateProductQuantity(Product purchasedProduct, int quantity) {
-        purchasedProduct.setQuantityAvailable(purchasedProduct.getQuantityAvailable() - quantity);
-    }
-    public static void sortMarketPlace(ArrayList<Product> products, Scanner input) {
-        String choice = "";
-        while (!choice.equalsIgnoreCase("P") && !choice.equalsIgnoreCase("Q")) {
-            System.out.println("Would you like to sort by price (P) or quantity (Q)?");
-            choice = input.nextLine().trim();
-            if (!choice.equalsIgnoreCase("P") && !choice.equalsIgnoreCase("Q")) {
-                System.out.println("Invalid option. Please choose either P for price or Q for quantity.");
-            }
-        }
+        if (criteriaChoice == null) return; // User cancelled the operation
 
-        String highToLowChoice = "";
-        while (!highToLowChoice.equalsIgnoreCase("yes") && !highToLowChoice.equalsIgnoreCase("no")) {
-            System.out.println("Sort high to low? (yes/no)");
-            highToLowChoice = input.nextLine().trim();
-            if (!highToLowChoice.equalsIgnoreCase("yes") && !highToLowChoice.equalsIgnoreCase("no")) {
-                System.out.println("Invalid option. Please answer yes or no.");
-            }
-        }
-        boolean highToLow = highToLowChoice.equalsIgnoreCase("yes");
+        // Ask the user to choose the sorting order
+        String[] orderOptions = {"High to Low", "Low to High"};
+        String orderChoice = (String) JOptionPane.showInputDialog(null,
+                "Sort high to low?",
+                "Sort Order", JOptionPane.QUESTION_MESSAGE, null,
+                orderOptions, orderOptions[0]);
 
-        Comparator<Product> comparator;
-        if (choice.equalsIgnoreCase("P")) {
-            comparator = Comparator.comparingDouble(Product::getPrice);
-        } else {
-            comparator = Comparator.comparingInt(Product::getQuantityAvailable);
-        }
+        if (orderChoice == null) return; // User cancelled the operation
 
-        if (highToLow) {
+        // Set up the comparator based on user choices
+        Comparator<Product> comparator = criteriaChoice.equals("Price") ?
+                Comparator.comparingDouble(Product::getPrice) :
+                Comparator.comparingInt(Product::getQuantityAvailable);
+
+        if (orderChoice.equals("High to Low")) {
             comparator = comparator.reversed();
         }
 
+        // Sort the products
         products.sort(comparator);
 
+        // Build a string to display sorted products
+        StringBuilder sortedProducts = new StringBuilder();
         for (Product p : products) {
-            System.out.println(p.printForSort());
+            sortedProducts.append(p.toString()).append("\n"); // Assuming Product's toString method gives the desired display format
         }
+
+        // Show the sorted list in a dialog
+        JTextArea textArea = new JTextArea(sortedProducts.toString());
+        textArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        JOptionPane.showMessageDialog(null, scrollPane, "Sorted Products", JOptionPane.INFORMATION_MESSAGE);
     }
-    public void exportPurchaseHistory() {
+
+    public void exportPurchaseHistoryGUI() {
         File inputFile = new File(purchaseHistoryFile);
         File outputFile = new File(userName + "_PurchaseHistoryExport.csv");
 
@@ -295,110 +302,102 @@ public class Consumer {
                 writer.newLine();
             }
 
-            System.out.println("Purchase history exported successfully to " + outputFile.getName());
+            // Show a success message
+            JOptionPane.showMessageDialog(null, "Purchase history exported successfully to " + outputFile.getName(), "Export Successful", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
-            System.out.println("Error while exporting purchase history: " + e.getMessage());
+            // Show an error message
+            JOptionPane.showMessageDialog(null, "Error while exporting purchase history: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    public void viewDashboardGUI(ArrayList<Product> products) {
+        boolean validInput = false;
+        while (!validInput) {
+            String optionsMessage = "Select an option for dashboard view:\n"
+                    + "1. List of Stores by Number of Products Sold\n"
+                    + "2. List of Stores by Products Purchased By You";
+
+            String choice = JOptionPane.showInputDialog(null, optionsMessage, "Dashboard View", JOptionPane.QUESTION_MESSAGE);
+
+            if (choice == null) {
+                JOptionPane.showMessageDialog(null, "Dashboard view cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            }
+
+            try {
+                int selectedOption = Integer.parseInt(choice);
+                StringBuilder message = new StringBuilder();
+                validInput = true;
+
+                switch (selectedOption) {
+                    case 1 -> {
+                        StoreplaceManager.calculateItemsPurchased();
+                        ArrayList<StoreSales> storeSalesList = viewStoresByProductsSold(products);
+                        for (StoreSales sales : storeSalesList) {
+                            message.append("Store: ").append(sales.getStoreName()).append(", Products Sold: ").append(sales.getTotalItemsSold()).append("\n");
+                        }
+                        JOptionPane.showMessageDialog(null, message.toString(), "Stores by Number of Products Sold", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    case 2 -> {
+                        ArrayList<StorePurchaseData> storePurchases = viewStoresByYourPurchases();
+                        for (StorePurchaseData data : storePurchases) {
+                            message.append("Store: ").append(data.getStoreName()).append(", Purchases: ").append(data.getPurchaseCount()).append("\n");
+                        }
+                        JOptionPane.showMessageDialog(null, message.toString(), "Stores by Your Purchases", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    default -> {
+                        JOptionPane.showMessageDialog(null, "Invalid choice. Please select a valid option.", "Error", JOptionPane.ERROR_MESSAGE);
+                        validInput = false;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    public void viewDashboard(ArrayList<Product> products, Scanner input) {
-        ArrayList<StoreSales> storeSalesList;
-        ArrayList<StorePurchaseData> storePurchases;
-        boolean cont = true;
-
-        do {
-            System.out.println("\nSelect an option for dashboard view:");
-            System.out.println("1. List of Stores by Number of Products Sold");
-            System.out.println("2. List of Stores by Products Purchased By You");
-
-            if (input.hasNextInt()) {
-                int choice = input.nextInt();
-                input.nextLine();
-
-                switch (choice) {
-                    case 1 -> {
-                        StoreplaceManager.calculateItemsPurchased();
-                        storeSalesList = viewStoresByProductsSold(products);
-                        // Display the results
-                        System.out.println("Stores by Number of Products Sold:");
-
-                        for (StoreSales sales : storeSalesList) {
-                            System.out.println("Store: " + sales.getStoreName() + ", Products Sold: " + sales.getTotalItemsSold());
-                        }
-                        cont = false;
-                    }
-                    case 2 -> {
-                        storePurchases = viewStoresByYourPurchases();
-                        System.out.println("Stores by Your Purchases:");
-                        assert storePurchases != null;
-                        for (StorePurchaseData data : storePurchases) {
-                            System.out.println("Store: " + data.getStoreName() + ", Purchases: " + data.getPurchaseCount());
-                        }
-                        cont = false;
-                    }
-                    default -> System.out.println("Invalid choice. Please select a valid option.");
-                }
-            } else {
-                System.out.println("Please enter a valid number.");
-                input.nextLine();
-            }
-        } while (cont);
-    }
-
-
-    public void sortDashboard(Scanner input) {
+    public void sortDashboardGUI() {
         ArrayList<StoreSales> storeSalesList = viewStoresByProductsSold(productList);
         ArrayList<StorePurchaseData> storePurchases = viewStoresByYourPurchases();
-        boolean validInputReceived = false;
 
-        while (!validInputReceived) {
-            try {
-                System.out.println("\nHow would you like to sort the dashboard?");
-                System.out.println("1: Number of Products Sold (High-Low)");
-                System.out.println("2: Number of Products Sold (Low-High)");
-                System.out.println("3: Products Purchased by You (High-Low)");
-                System.out.println("4: Products Purchased by You (Low-High)");
+        String[] options = {"Number of Products Sold (High-Low)", "Number of Products Sold (Low-High)",
+                "Products Purchased by You (High-Low)", "Products Purchased by You (Low-High)"};
+        String choice = (String) JOptionPane.showInputDialog(null, "How would you like to sort the dashboard?",
+                "Sort Dashboard", JOptionPane.QUESTION_MESSAGE, null,
+                options, options[0]);
 
-                int choice = input.nextInt();
-
-                switch (choice) {
-                    case 1 -> {
-                        storeSalesList.sort((p1, p2) -> Integer.compare(p2.getTotalItemsSold(), p1.getTotalItemsSold()));
-                        validInputReceived = true;
-                    }
-                    case 2 -> {
-                        storeSalesList.sort(Comparator.comparingInt(StoreSales::getTotalItemsSold));
-                        validInputReceived = true;
-                    }
-                    case 3 -> {
-                        assert storePurchases != null;
-                        storePurchases.sort((p1, p2) -> Integer.compare(p2.getPurchaseCount(), p1.getPurchaseCount()));
-                        validInputReceived = true;
-                    }
-                    case 4 -> {
-                        assert storePurchases != null;
-                        storePurchases.sort(Comparator.comparingInt(StorePurchaseData::getPurchaseCount));
-                        validInputReceived = true;
-                    }
-                    default -> System.out.println("Invalid choice. Please select a valid option.");
-                }
-
-                if (validInputReceived) {
-                    if (choice <= 2) {
-                        for (StoreSales sales : storeSalesList) {
-                            System.out.println("Store: " + sales.getStoreName() + ", Products Sold: " + sales.getTotalItemsSold());
-                        }
-                    } else {
-                        for (StorePurchaseData data : storePurchases) {
-                            System.out.println("Store: " + data.getStoreName() + ", Purchases: " + data.getPurchaseCount());
-                        }
-                    }
-                }
-
-            } catch (InputMismatchException e) {
-                System.out.println("Please enter a valid number.");
-                input.nextLine();
+        if (choice != null && !choice.isEmpty()) {
+            StringBuilder message = new StringBuilder();
+            switch (choice) {
+                case "Number of Products Sold (High-Low)":
+                    storeSalesList.sort((p1, p2) -> Integer.compare(p2.getTotalItemsSold(), p1.getTotalItemsSold()));
+                    break;
+                case "Number of Products Sold (Low-High)":
+                    storeSalesList.sort(Comparator.comparingInt(StoreSales::getTotalItemsSold));
+                    break;
+                case "Products Purchased by You (High-Low)":
+                    storePurchases.sort((p1, p2) -> Integer.compare(p2.getPurchaseCount(), p1.getPurchaseCount()));
+                    break;
+                case "Products Purchased by You (Low-High)":
+                    storePurchases.sort(Comparator.comparingInt(StorePurchaseData::getPurchaseCount));
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Invalid choice. Please select a valid option.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
             }
+
+            // Display the sorted data
+            if (choice.contains("Products Sold")) {
+                for (StoreSales sales : storeSalesList) {
+                    message.append("Store: ").append(sales.getStoreName()).append(", Products Sold: ").append(sales.getTotalItemsSold()).append("\n");
+                }
+            } else {
+                for (StorePurchaseData data : storePurchases) {
+                    message.append("Store: ").append(data.getStoreName()).append(", Purchases: ").append(data.getPurchaseCount()).append("\n");
+                }
+            }
+            JOptionPane.showMessageDialog(null, message.toString(), "Sorted Dashboard", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "No option selected.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -419,6 +418,7 @@ public class Consumer {
 
         return storeSalesList;
     }
+
 
     private static StoreSales findStoreSales (ArrayList<StoreSales> list, String storeName) {
         for (StoreSales sales : list) {
@@ -463,29 +463,58 @@ public class Consumer {
         return null;
     }
 
-    public static void showDescription(int selectedProduct, Scanner scanner) {
-        boolean cont = true;
-        do {
-            try {
-                int index = selectedProduct - 1;
-                Product selected = productList.get(index);
-
-                System.out.println(selected.getName());
-                System.out.println(selected.getDescription() + " ----- " + selected.getQuantityAvailable() + " available");
-
-                cont = false;
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("Select a valid input, please.");
-                while (!scanner.hasNextInt()) {
-                    System.out.println("Invalid input. Please enter a number.");
-                    scanner.next();
-                }
-                selectedProduct = scanner.nextInt();
-                scanner.nextLine();
+    public static void showDescriptionGUI(ArrayList<Product> productList) {
+        String input = JOptionPane.showInputDialog("Enter the product number to view its description:");
+        try {
+            int selectedProduct = Integer.parseInt(input);
+            int index = selectedProduct - 1;
+            if (index < 0 || index >= productList.size()) {
+                JOptionPane.showMessageDialog(null, "Invalid product number. Please select a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } while (cont);
+
+            Product selected = productList.get(index);
+            String productDescription = selected.getName() + "\n" +
+                    selected.getDescription() + " ---- " +
+                    selected.getQuantityAvailable() + " available";
+
+            JOptionPane.showMessageDialog(null, productDescription, "Product Description", JOptionPane.INFORMATION_MESSAGE);
+        } catch (NumberFormatException e) {
+            if (JOptionPane.CANCEL_OPTION == 2) {
+                JOptionPane.showMessageDialog(null, "Operation cancelled.", "Cancelled", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
-    public ArrayList<String> printCart() {
+
+    public void printCart() {
+        ArrayList<String> cartItems = new ArrayList<>();
+        String cartContents = "";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(cartFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                cartItems.add(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error reading cart file.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (cartItems.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Your cart is empty.", "Cart", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            for (int i = 0; i < cartItems.size(); i++) {
+                cartContents += (i + 1) + ". " + cartItems.get(i) + "\n";
+            }
+            JOptionPane.showMessageDialog(null, cartContents, "Cart Items", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+
+    public ArrayList<String> getCartList() {
         ArrayList<String> cartItems = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(cartFile))) {
@@ -496,27 +525,17 @@ public class Consumer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Print
-        for (int i = 0; i < cartItems.size(); i++) {
-            System.out.println((i + 1) + ". " + cartItems.get(i));
-        }
-
         return cartItems;
     }
 
-    public static void main(String[] args) { //For Testing
+        public static void main(String[] args) { //For Testing
         Consumer c = new Consumer("Sameer");
         Scanner input = new Scanner(System.in);
-        ArrayList<Product> products;
-        products = viewMarketPlace();
+        ArrayList<Product> products = getProductList();
+        //viewMarketPlace();
+        //c.printPurchaseHistory();
+        //searchProducts(products);
+        c.printCart();
         //c.addProduct(products.get(5));
-        //c.addProduct((products.get(3)));
-        //c.purchaseProduct();
-        //viewDashboard(products, input);
-        //sortDashboard(input);
-        //c.addProduct(productList.get(5));
-        //c.addProduct(productList.get(0));
-        //c.removeProduct(productList.get(0).getName());
     }
 }
