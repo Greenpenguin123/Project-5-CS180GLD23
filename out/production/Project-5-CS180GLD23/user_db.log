@@ -54,3 +54,16 @@ User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
 User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
 User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
 User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: buyer, Action: Search Pruducts, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: Wallen, Action: [AddUser buyer], Message: Success
