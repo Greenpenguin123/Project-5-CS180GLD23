@@ -7,8 +7,8 @@ import java.util.ArrayList;
 public class consumerPortal extends JFrame {
     public static void openConsumerPortal(String userName) {
         Consumer consumer = new Consumer(userName);
-        // Path pathToWatch = Paths.get("/Users/sameermurthy/Library/Mobile Documents/com~apple~CloudDocs/Documents/Purdue /1st year/Project-5-CS180GLD23");
-        Path pathToWatch = Paths.get("./");
+        Path pathToWatch = Paths.get("/Users/sameermurthy/Library/Mobile Documents/com~apple~CloudDocs/Documents/Purdue /1st year/Project-5-CS180GLD23");
+
         FileWatcher watcher = new FileWatcher(pathToWatch, consumer);
         Thread watcherThread = new Thread(watcher);
         watcherThread.start();
