@@ -114,6 +114,18 @@ public class loginsession {
             ReturnResult(err, err == 0?"Remove product Success":"Add product failed", out);
         }
 
+        if(reqVal.equals("AddtoShoppingCart")) {
+            String buyer = req.get("user");
+            String seller = req.get("");
+            String storeName = req.get("store");
+            String productName = req.get("product");
+            int quantity = req.get_int("quantity");
+            double price =req.get_double("price");
+            int err = marketData.AddShoppingCart(buyer, seller, storeName, productName, quantity, price);
+
+            ReturnResult(err, err == 0?"Adding to Shopping Cart Succeeded":"Adding to Shopping Cart failed", out);
+        }
+
     }
 
     private void ReturnResult(int status, String msg, PrintWriter out)

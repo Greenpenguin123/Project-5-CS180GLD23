@@ -25,17 +25,18 @@ class BrowseProduct {
 }
 
 public class BuyerWnd extends JFrame {
-    private List<ProductForBuyer> products;
+
     private DefaultTableModel tableModel;
     private JTable table;
     private JTextField searchField;
 
     private String buyerName;
 
+
     public BuyerWnd(String buyerName) {
 
         this.buyerName = buyerName;
-        products = new ArrayList<>();
+
         // products.add(new ProductForBuyer("Laptop", "Powerful laptop with high performance", 10, 1200.0));
         // products.add(new ProductForBuyer("Smartphone", "Latest smartphone with amazing features", 20, 800.0));
         // products.add(new ProductForBuyer("Headphones", "Noise-canceling headphones for immersive experience", 15, 150.0));
@@ -69,7 +70,13 @@ public class BuyerWnd extends JFrame {
             }
         });
 
-        JButton shoppingCartButton = new JButton("Add to shoppingCart");
+        JButton AddToShoppingCartButton = new JButton("Add to Shopping Cart");
+        AddToShoppingCartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                AddToShoppingCart();
+            }
+        });
+
 
 
         JPanel searchPanel = new JPanel();
@@ -80,8 +87,7 @@ public class BuyerWnd extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(buyButton);
         buttonPanel.add(buyButton);
-        buttonPanel.add(shoppingCartButton);
-        shoppingCartButton.setVisible(false);
+        buttonPanel.add(AddToShoppingCartButton);
 
         setLayout(new BorderLayout());
         add(searchPanel, BorderLayout.NORTH);
@@ -148,35 +154,41 @@ public class BuyerWnd extends JFrame {
             // Show a message if no product is selected
             JOptionPane.showMessageDialog(this, "Please select a product to buy.", "No Product Selected", JOptionPane.WARNING_MESSAGE);
         }
+
+
     }
+    private void AddToShoppingCart() {
+        int selectedRow = table.getSelectedRow();
+        int quantityBought = 0;
+        if (selectedRow != -1) {
+            // Implement the logic for buying the product
+            String inputText = JOptionPane.showInputDialog(null, "Please enter an integer:");
 
-    public static class ProductForBuyer {
-        private String name;
-        private String description;
-        private int quantity;
-        private double price;
+            try {
+                // Convert the input text to an integer
+                quantityBought = Integer.parseInt(inputText);
+                // Process the integer value as needed
+                JOptionPane.showMessageDialog(null, "You added: " + quantityBought + " items to Shopping Cart", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } catch (NumberFormatException | NullPointerException ex) {
+                // Handle the case where the input is not a valid integer or the user cancels the input
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            String sellerName = (String) table.getValueAt(selectedRow, 0);
+            String storeName = (String) table.getValueAt(selectedRow, 1);
+            String productName = (String) table.getValueAt(selectedRow, 2);
+            double price = (double) table.getValueAt(selectedRow, 5);
+            int ret = CmdIO.AddtoShoppingCart(buyerName, storeName, productName, sellerName, quantityBought, price);
+            if (ret == 0) {
+                JOptionPane.showMessageDialog(null, "Purchase added successfully!", "Added to Cart Successfully", JOptionPane.INFORMATION_MESSAGE);
+                searchProducts();
+            } else {
+                JOptionPane.showMessageDialog(null, "Purchase added failed!", "Added to Cart Unsuccessful", JOptionPane.WARNING_MESSAGE);
 
-        public ProductForBuyer(String name, String description, int quantity, double price) {
-            this.name = name;
-            this.description = description;
-            this.quantity = quantity;
-            this.price = price;
+            }
+
+
         }
 
-        public String getName() {
-            return name;
-        }
 
-        public String getDescription() {
-            return description;
-        }
-
-        public int getQuantity() {
-            return quantity;
-        }
-
-        public double getPrice() {
-            return price;
-        }
     }
 }

@@ -263,4 +263,30 @@ public class CmdIO {
         }
         return -1;
     }
+
+    static int AddtoShoppingCart(String buyerName, String storeName, String sellerName, String productName, int quantityPlaced, double price) {
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "AddtoShoppingCart");
+        jsonMessage.put("user", buyerName);
+        jsonMessage.put("seller", sellerName);
+        jsonMessage.put("store", storeName);
+        jsonMessage.put("product", productName);
+        jsonMessage.put("quantity", quantityPlaced);
+        jsonMessage.put("price", price);
+
+        writer.println(jsonMessage.toJSONString());
+
+        try{
+            String serverResponse = reader.readLine();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            System.out.println("serverResponse:" + serverResponse);
+            int ret = ((Long) jsonObject.get("status")).intValue();
+            return ret;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
 }
