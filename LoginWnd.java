@@ -7,7 +7,7 @@ public class LoginWnd extends JFrame {
 
     private JTextField serverAddressField, portField, usernameField;
     private JPasswordField passwordField;
-    private JRadioButton sellerRadioButton, buyerRadioButton;
+    private JRadioButton sellerRadioButton, buyerRadioButton, buyerLocalButton;
     private JTextArea statusTextArea;
 
     public static void main(String[] args) {
@@ -29,9 +29,11 @@ public class LoginWnd extends JFrame {
         passwordField = new JPasswordField();
         sellerRadioButton = new JRadioButton("Seller");
         buyerRadioButton = new JRadioButton("Buyer");
+        buyerLocalButton = new JRadioButton("Buyer Local");
         ButtonGroup userTypeGroup = new ButtonGroup();
         userTypeGroup.add(sellerRadioButton);
         userTypeGroup.add(buyerRadioButton);
+        userTypeGroup.add(buyerLocalButton);
 
         JButton loginButton = new JButton("Login");
         JButton createAccountButton = new JButton("Create New Account");
@@ -52,6 +54,8 @@ public class LoginWnd extends JFrame {
         add(sellerRadioButton);
         add(new JLabel()); // Empty label for spacing
         add(buyerRadioButton);
+        add(new JLabel());
+        add(buyerLocalButton);
 
         add(createAccountButton);
         add(loginButton);
@@ -90,10 +94,26 @@ public class LoginWnd extends JFrame {
                             sellerWnd.setVisible(true);
                         }
                     });
-                } else {
-                    dispose();
-                    consumerPortal.openConsumerPortal(username);
+                } else if (buyerRadioButton.isSelected()) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Close the login window
+                            dispose();
+                            BuyerWnd buyerWnd = new BuyerWnd(username);
+                            buyerWnd.setVisible(true);
+                        }
+                    });
 
+                } else {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Close the login window
+                            dispose();
+                            consumerPortal.openConsumerPortal(username);
+                        }
+                    });
                 }
             }
         });

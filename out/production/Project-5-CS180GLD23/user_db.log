@@ -35,3 +35,22 @@ User: locahost2@gmail.com, Action: [login], Message: User not found or incorrect
 User: locahost@gmail.com, Action: [login], Message: User not found or incorrect credentials
 User: locahost@gmail.com, Action: [login], Message: User not found or incorrect credentials
 User: locahost@gmail.com, Action: [AddUser buyer], Message: Success
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: RemoveProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: RemoveProd:FindStore, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: RemoveProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: RemoveProd:FindStore, Message: store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
