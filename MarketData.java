@@ -585,20 +585,24 @@ public class MarketData implements IMarketData {
                 JSONObject jSaleRecordObj = (JSONObject) obj;
                 String buyerName = (String) jSaleRecordObj.get("buyer");
                 String dateTimeString = (String) jSaleRecordObj.get("datetime");
-                try {
-                    //LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                    String sellerName = (String) jSaleRecordObj.get("seller");
-                    String storeName = (String) jSaleRecordObj.get("store");
-                    String product = (String) jSaleRecordObj.get("product");
-                    int quantity = ((Long) jSaleRecordObj.get("quantity")).intValue();
-                    double price = (double) jSaleRecordObj.get("price");
+                if (dateTimeString != null) {
+                    try {
+                        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                        String sellerName = (String) jSaleRecordObj.get("seller");
+                        String storeName = (String) jSaleRecordObj.get("store");
+                        String product = (String) jSaleRecordObj.get("product");
+                        int quantity = ((Long) jSaleRecordObj.get("quantity")).intValue();
+                        double price = (double) jSaleRecordObj.get("price");
 
-                    SaleRecord saleRecord = new SaleRecord(buyerName, null, sellerName, storeName, product, quantity,
-                            price);
-                    salesRecordList.add(saleRecord);
-                } catch (DateTimeParseException e) {
-                    System.err.println("Error parsing date-time string: " + dateTimeString);
-                    e.printStackTrace();
+                        SaleRecord saleRecord = new SaleRecord(buyerName, dateTime, sellerName, storeName, product, quantity, price);
+                        salesRecordList.add(saleRecord);
+                    } catch (DateTimeParseException e) {
+                        System.err.println("Error parsing date-time string: " + dateTimeString);
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.err.println("DateTime string is null.");
+                    // Handle the situation where dateTimeString is null.
                 }
             }
         } catch (IOException | ParseException e) {
@@ -607,6 +611,7 @@ public class MarketData implements IMarketData {
             e.printStackTrace();
         }
     }
+
 
 
     private void loadMarketData() {

@@ -11,6 +11,9 @@ import java.util.Map;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+
 // for server
 class ProductSeller {
     String name;
@@ -99,8 +102,9 @@ public class SellerWnd extends JFrame {
         JButton addProductButton = new JButton("Add Product");
         JButton refreshProductButton = new JButton("Refresh ProductList");
         JButton deleteProductButton = new JButton("Delete Product");
-
         JButton createStoreButton = new JButton("Create Store..");
+        JButton SignOutButton = new JButton("Sign Out");
+
 
         // Layout
         setLayout(new BorderLayout());
@@ -125,16 +129,16 @@ public class SellerWnd extends JFrame {
         formPanel.add(addProductButton);
         formPanel.add(deleteProductButton);
         formPanel.add(refreshProductButton);
-
+        formPanel.add(SignOutButton);
         productPanel.add(formPanel, BorderLayout.SOUTH);
 
         add(storePanel, BorderLayout.WEST);
         add(productPanel, BorderLayout.CENTER);
         // add(deleteProductButton, BorderLayout.SOUTH);
-
         createStoreButton.addActionListener(e -> createStore());
+        SignOutButton.addActionListener(e -> SignOut());
 
-        // Listeners
+    // Listeners
         storeList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 String selectedStoreName = storeList.getSelectedValue();
@@ -271,6 +275,14 @@ public class SellerWnd extends JFrame {
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid quantity or price.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+    private void SignOut() {
+        int response = showConfirmDialog(this, "Are you sure you want to sign out?", "Sign Out",
+                YES_NO_OPTION);
+
+        if (response == JOptionPane.YES_OPTION) {
+            dispose();
         }
     }
 }

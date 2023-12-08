@@ -13,6 +13,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static javax.swing.JOptionPane.*;
+
 class BrowseProduct {
     public String seller;
     public String store;
@@ -128,6 +130,14 @@ public class BuyerWnd extends JFrame {
             }
         });
 
+        JButton SignOut = new JButton("Sign Out");
+        SignOut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SignOut();
+            }
+        });
+
         JPanel searchPanel = new JPanel();
         searchPanel.add(new JLabel("Search: "));
         searchPanel.add(searchField);
@@ -138,6 +148,7 @@ public class BuyerWnd extends JFrame {
         buttonPanel.add(purchaseRecordButton);
         buttonPanel.add(AddToShoppingCartButton);
         buttonPanel.add(GoToShoppingCartButton);
+        buttonPanel.add(SignOut);
 
         setLayout(new BorderLayout());
         add(searchPanel, BorderLayout.NORTH);
@@ -178,7 +189,7 @@ public class BuyerWnd extends JFrame {
         int quantityBought = 0;
         if (selectedRow != -1) {
             // Implement the logic for buying the product
-            String inputText = JOptionPane.showInputDialog(null, "Please enter number of purrchase items:");
+            String inputText = showInputDialog(null, "Please enter number of purrchase items:");
 
             try {
                 // Convert the input text to an integer
@@ -189,8 +200,8 @@ public class BuyerWnd extends JFrame {
             } catch (NumberFormatException | NullPointerException ex) {
                 // Handle the case where the input is not a valid integer or the user cancels
                 // the input
-                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
+                        ERROR_MESSAGE);
                 return;
             }
             String seller = (String) table.getValueAt(selectedRow, 0);
@@ -199,18 +210,18 @@ public class BuyerWnd extends JFrame {
             double price = (double) table.getValueAt(selectedRow, 5);
             int ret = CmdIO.purchaseProduct(seller, buyerName, storeName, productName, quantityBought, price);
             if (ret == 0) {
-                JOptionPane.showMessageDialog(null, "Purchase successful!", "Purchase Success",
-                        JOptionPane.INFORMATION_MESSAGE);
+                showMessageDialog(null, "Purchase successful!", "Purchase Success",
+                        INFORMATION_MESSAGE);
                 searchProducts();
             } else {
-                JOptionPane.showMessageDialog(null, "Purchase Failed!", "Purchase Failed", JOptionPane.WARNING_MESSAGE);
+                showMessageDialog(null, "Purchase Failed!", "Purchase Failed", WARNING_MESSAGE);
 
             }
 
         } else {
             // Show a message if no product is selected
-            JOptionPane.showMessageDialog(this, "Please select a product to buy.", "No Product Selected",
-                    JOptionPane.WARNING_MESSAGE);
+            showMessageDialog(this, "Please select a product to buy.", "No Product Selected",
+                    WARNING_MESSAGE);
         }
 
     }
@@ -236,25 +247,25 @@ public class BuyerWnd extends JFrame {
         int quantityBought = 0;
         if (selectedRow != -1) {
             // Implement the logic for buying the product
-            String inputText = JOptionPane.showInputDialog(null, "Please enter number of itms:");
+            String inputText = showInputDialog(null, "Please enter number of itms:");
 
             try {
                 // Convert the input text to an integer
                 quantityBought = Integer.parseInt(inputText);
                 // Process the integer value as needed
-                JOptionPane.showMessageDialog(null, "You added: " + quantityBought + " items to Shopping Cart",
-                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                showMessageDialog(null, "You added: " + quantityBought + " items to Shopping Cart",
+                        "Success", INFORMATION_MESSAGE);
             } catch (NumberFormatException | NullPointerException ex) {
                 // Handle the case where the input is not a valid integer or the user cancels
                 // the input
-                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
+                        ERROR_MESSAGE);
                 return;
             }
 
             if (quantityBought <= 0) {
-                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
+                        ERROR_MESSAGE);
                 return;
             }
             String seller = (String) table.getValueAt(selectedRow, 0);
@@ -264,12 +275,12 @@ public class BuyerWnd extends JFrame {
 
             int ret = CmdIO.AddtoShoppingCart(buyerName, storeName, seller, productName, quantityBought, price);
             if (ret == 0) {
-                JOptionPane.showMessageDialog(null, "Purchase added successfully!", "Added to Cart Successfully",
-                        JOptionPane.INFORMATION_MESSAGE);
+                showMessageDialog(null, "Purchase added successfully!", "Added to Cart Successfully",
+                        INFORMATION_MESSAGE);
                 searchProducts();
             } else {
-                JOptionPane.showMessageDialog(null, "Purchase added failed!", "Added to Cart Unsuccessful",
-                        JOptionPane.WARNING_MESSAGE);
+                showMessageDialog(null, "Purchase added failed!", "Added to Cart Unsuccessful",
+                        WARNING_MESSAGE);
 
             }
 
@@ -290,5 +301,13 @@ public class BuyerWnd extends JFrame {
                  */
             }
         });
+    }
+    private void SignOut() {
+        int response = showConfirmDialog(this, "Are you sure you want to sign out?", "Sign Out",
+            YES_NO_OPTION);
+
+        if (response == JOptionPane.YES_OPTION) {
+            dispose();
+        }
     }
 }
