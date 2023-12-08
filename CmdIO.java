@@ -32,11 +32,7 @@ public class CmdIO {
         }
     }
 
-    static int Login(String serverAddress, int serverPort, String user, String pwd, String userType) {
-        if (connect(serverAddress, serverPort) != 0) {
-            return -1;
-        }
-
+    static int Login(String user, String pwd, String userType) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "login");
         jsonMessage.put("user", user);
@@ -59,17 +55,18 @@ public class CmdIO {
         return -1;
     }
 
-    static int AddLogin(String serverAddress, int serverPort, String user, String pwd, String userType) {
-        if (connect(serverAddress, serverPort) != 0) {
-            return -1;
-        }
+    static int AddLogin(String user, String pwd, String userType) {
+        /*
+         * if (connect(serverAddress, serverPort) != 0) {
+         * return -1;
+         * }
+         */
 
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "adduser");
         jsonMessage.put("user", user);
         jsonMessage.put("pwd", pwd);
         jsonMessage.put("type", userType);
-
 
         writer.println(jsonMessage.toJSONString());
         try {
@@ -86,7 +83,6 @@ public class CmdIO {
 
         return -1;
     }
-
 
     static List<String> queryStores(String seller) {
         JSONObject jsonMessage = new JSONObject();
@@ -111,7 +107,7 @@ public class CmdIO {
         return results;
     }
 
-    static int createStore(String seller, String storeName){
+    static int createStore(String seller, String storeName) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "addstore");
         jsonMessage.put("user", seller);
@@ -131,7 +127,7 @@ public class CmdIO {
         return -1;
     }
 
-    static int addProduct(String seller, String storeName,String product, String desc, int quantity, double price){
+    static int addProduct(String seller, String storeName, String product, String desc, int quantity, double price) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "addproduct");
         jsonMessage.put("user", seller);
@@ -155,7 +151,7 @@ public class CmdIO {
         return -1;
     }
 
-    static int removeProduct(String seller, String storeName,String product){
+    static int removeProduct(String seller, String storeName, String product) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "removeproduct");
         jsonMessage.put("user", seller);
@@ -194,10 +190,10 @@ public class CmdIO {
 
             for (Object obj : jsonArray) {
                 JSONObject jsonProduct = (JSONObject) obj;
-                String prodName = (String)jsonProduct.get("product");
-                String description = (String)jsonProduct.get("description");
-                int quantity = ((Long)jsonProduct.get("quantity")).intValue();
-                double price = (double)jsonProduct.get("price");
+                String prodName = (String) jsonProduct.get("product");
+                String description = (String) jsonProduct.get("description");
+                int quantity = ((Long) jsonProduct.get("quantity")).intValue();
+                double price = (double) jsonProduct.get("price");
 
                 ProductSeller prod = new ProductSeller(prodName, description, quantity, price);
                 products.add(prod);
@@ -207,6 +203,7 @@ public class CmdIO {
         }
         return products;
     }
+
     static List<BrowseProduct> searchProduct(String keywords) {
         List<BrowseProduct> products = new ArrayList<>();
 
@@ -224,12 +221,12 @@ public class CmdIO {
 
             for (Object obj : jsonArray) {
                 JSONObject jsonProduct = (JSONObject) obj;
-                String seller = (String)jsonProduct.get("seller");
-                String store = (String)jsonProduct.get("store");
-                String prodName = (String)jsonProduct.get("product");
-                String description = (String)jsonProduct.get("description");
-                int quantity = ((Long)jsonProduct.get("quantity")).intValue();
-                double price = (double)jsonProduct.get("price");
+                String seller = (String) jsonProduct.get("seller");
+                String store = (String) jsonProduct.get("store");
+                String prodName = (String) jsonProduct.get("product");
+                String description = (String) jsonProduct.get("description");
+                int quantity = ((Long) jsonProduct.get("quantity")).intValue();
+                double price = (double) jsonProduct.get("price");
 
                 BrowseProduct prod = new BrowseProduct(seller, store, prodName, description, quantity, price);
                 products.add(prod);
@@ -240,9 +237,44 @@ public class CmdIO {
         return products;
     }
 
-    static int purchaseProduct(String user, String storeName, String product, int quantity, double price) {
+    static List<SaleRecordBuyer> searchBuyerPurchaseRecords(String buyer) {
+        List<SaleRecordBuyer> sales = new ArrayList<>();
+
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "buyerpurchaserecords");
+        jsonMessage.put("user", buyer);
+
+        writer.println(jsonMessage.toJSONString());
+        try {
+            String serverResponse = reader.readLine();
+            System.out.println("serverResponse:" + serverResponse);
+
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            JSONArray jsonArray = (JSONArray) jsonObject.get("array");
+
+            for (Object obj : jsonArray) {
+                JSONObject jsonProduct = (JSONObject) obj;
+                String seller = (String) jsonProduct.get("seller");
+                String store = (String) jsonProduct.get("store");
+                String prodName = (String) jsonProduct.get("product");
+                String datetime = (String) jsonProduct.get("datetime");
+                int quantity = ((Long) jsonProduct.get("quantity")).intValue();
+                double price = (double) jsonProduct.get("price");
+
+                SaleRecordBuyer sale = new SaleRecordBuyer(buyer, datetime, seller, store, prodName, quantity, price);
+                sales.add(sale);
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return sales;
+    }
+
+    static int purchaseProduct(String seller, String user, String storeName, String product, int quantity,
+                               double price) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "buyproduct");
+        jsonMessage.put("seller", seller);
         jsonMessage.put("user", user);
         jsonMessage.put("store", storeName);
         jsonMessage.put("product", product);
@@ -250,7 +282,7 @@ public class CmdIO {
         jsonMessage.put("price", price);
 
         writer.println(jsonMessage.toJSONString());
-        try{
+        try {
             String serverResponse = reader.readLine();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
             System.out.println("serverResponse:" + serverResponse);
@@ -264,9 +296,32 @@ public class CmdIO {
         return -1;
     }
 
-    static int AddtoShoppingCart(String buyerName, String storeName, String sellerName, String productName, int quantityPlaced, double price) {
+    static int ShoppingCartBuy(String buyer)
+    {
         JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("req", "AddtoShoppingCart");
+        jsonMessage.put("req", "shoppingcartbuy");
+        jsonMessage.put("user", buyer);
+
+        writer.println(jsonMessage.toJSONString());
+        try {
+            String serverResponse = reader.readLine();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            System.out.println("serverResponse:" + serverResponse);
+            int ret = ((Long) jsonObject.get("status")).intValue();
+            return ret;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+
+    }
+
+    static int AddtoShoppingCart(String buyerName, String storeName, String sellerName, String productName,
+                                 int quantityPlaced, double price) {
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "addtoshoppingcart");
         jsonMessage.put("user", buyerName);
         jsonMessage.put("seller", sellerName);
         jsonMessage.put("store", storeName);
@@ -276,7 +331,7 @@ public class CmdIO {
 
         writer.println(jsonMessage.toJSONString());
 
-        try{
+        try {
             String serverResponse = reader.readLine();
             JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
             System.out.println("serverResponse:" + serverResponse);
@@ -289,4 +344,37 @@ public class CmdIO {
         }
         return -1;
     }
+
+    static List<SaleRecordBuyer> ReadShoppingCart(String buyer) {
+        List<SaleRecordBuyer> sales = new ArrayList<>();
+
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "readshoppingcart");
+        jsonMessage.put("user", buyer);
+
+        writer.println(jsonMessage.toJSONString());
+        try {
+            String serverResponse = reader.readLine();
+            System.out.println("serverResponse:" + serverResponse);
+
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            JSONArray jsonArray = (JSONArray) jsonObject.get("array");
+
+            for (Object obj : jsonArray) {
+                JSONObject jsonProduct = (JSONObject) obj;
+                String seller = (String) jsonProduct.get("seller");
+                String store = (String) jsonProduct.get("store");
+                String prodName = (String) jsonProduct.get("product");
+                int quantity = ((Long) jsonProduct.get("quantity")).intValue();
+                double price = (double) jsonProduct.get("price");
+
+                SaleRecordBuyer sale = new SaleRecordBuyer(buyer, null, seller, store, prodName, quantity, price);
+                sales.add(sale);
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return sales;
+    }
+
 }

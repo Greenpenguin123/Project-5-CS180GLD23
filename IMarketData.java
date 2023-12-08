@@ -12,12 +12,15 @@ public interface IMarketData{
     int AddStore(String seller, String storeName);
     int AddProduct(String seller, String storeName, String productName, String description, int quantity, double price);
     int RemoveProduct(String seller, String storeName, String productName);
-    // buyer
 
+    // buyer
     List<productBrowseResult> BrowseProduct(String seachKeyWords);
-    int BuyProduct(String seller, String storeName, String productName, int quantity, double price);
+    List<SaleRecord> querybuyerPurchaseRecords(String buyer);
+    List<ShoppingCartRecord> readShoppingCart(String buyer);
+    int BuyProduct(String seller, String buyer, String storeName, String productName, int quantity, double price);
 
     // Todo shopping cart
     //List<productBrowseResult> ShoppingCart(String buyer);
     int AddShoppingCart(String buyer, String seller, String storeName, String productName, int quantity, double price);
+    int ShoppingCartCommit(String buyer);
 }

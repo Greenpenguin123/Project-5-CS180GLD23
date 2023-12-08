@@ -63,24 +63,30 @@ public class LoginWnd extends JFrame {
         add(statusTextArea);
 
         sellerRadioButton.setSelected(true);
+        String serverAddress = "localhost";
+        int port = 5432;
+        if(CmdIO.connect(serverAddress, port) != 0)
+        {
+            return;
+        }
 
         // Set action listeners
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Handle login logic here
-                String serverAddress = "localhost";
-                int port = 5432;
+                ///String serverAddress = "localhost";
+                //int port = 5432;
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 String userType = sellerRadioButton.isSelected() ? "seller" : "buyer";
 
-                int ret = CmdIO.Login(serverAddress, port, username, password, userType);
+                int ret = CmdIO.Login(username, password, userType);
 
                 if (ret == 0) {
                     JOptionPane.showMessageDialog(LoginWnd.this, "Login Successful as " + userType + "!");
                 } else {
-                    JOptionPane.showMessageDialog(LoginWnd.this, "Login unsuccessful as " + userType + "!");
+                    JOptionPane.showMessageDialog(LoginWnd.this, "Login failed as " + userType + "!");
                     return;
                 }
 
@@ -111,7 +117,7 @@ public class LoginWnd extends JFrame {
                         public void run() {
                             // Close the login window
                             dispose();
-                            consumerPortal.openConsumerPortal(username);
+                            // consumerPortal.openConsumerPortal(username);
                         }
                     });
                 }
@@ -121,15 +127,11 @@ public class LoginWnd extends JFrame {
         createAccountButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String serverAddress = "localhost";
-                int port = 5432;
-                String email = usernameField.getText();
-                String[] parts = email.split("@");
-                String username = parts[0];
+                String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
                 String userType = sellerRadioButton.isSelected() ? "seller" : "buyer";
 
-                int ret = CmdIO.AddLogin(serverAddress, port, username, password, userType);
+                int ret = CmdIO.AddLogin(username, password, userType);
                 if (ret == 0) {
                     JOptionPane.showMessageDialog(LoginWnd.this, "Account creation successful as " + userType + "!");
                 } else {

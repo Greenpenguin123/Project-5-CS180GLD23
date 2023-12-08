@@ -4,9 +4,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 // for server side
 class ProductMarketPlace {
@@ -15,7 +18,7 @@ class ProductMarketPlace {
     private int quantity;
     private double price;
 
-    public ProductMarketPlace (String name, String description, int quantity, double price) {
+    public ProductMarketPlace(String name, String description, int quantity, double price) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -153,39 +156,6 @@ class Store {
         return storeList;
     }
 
-}
-
-class SaleRecord {
-    public String sellerName;
-    public String storeName;
-    public String productName;
-    public int quantity;
-    public double price;
-
-    public SaleRecord(String sellerName, String storeName, String productName, int quantity, double price) {
-        this.sellerName = sellerName;
-        this.storeName = storeName;
-        this.productName = productName;
-        this.quantity = quantity;
-        this.price = price;
-    }
-
-    public static JSONArray salesToJsonArray(List<SaleRecord> saleRecords) {
-        JSONArray jSaleRecords = new JSONArray();
-
-        for (SaleRecord saleRecord : saleRecords) {
-            JSONObject salesJson = new JSONObject();
-            salesJson.put("seller", saleRecord.sellerName);
-            salesJson.put("store", saleRecord.storeName);
-            salesJson.put("product", saleRecord.productName);
-            salesJson.put("quantity", saleRecord.quantity);
-            salesJson.put("price", saleRecord.price);
-
-            jSaleRecords.add(salesJson);
-        }
-
-        return jSaleRecords;
-    }
 }
 
 class ShoppingCartRecord {
@@ -431,8 +401,38 @@ public class MarketData implements IMarketData {
         }
     }
 
-    @Override
-    public int BuyProduct(String seller, String storeName, String productName, int quantity, double price) {
+    public List<SaleRecord> querybuyerPurchaseRecords(String buyer) {
+        // salesRecordList
+        List<SaleRecord> resultSet = new ArrayList<>();
+        lock.readLock().lock();
+        try {
+            log.log(buyer, "purchase history", "");
+            for (SaleRecord saleRecord : salesRecordList) {
+
+                if (saleRecord.buyer.equals(buyer)) {
+                    resultSet.add(saleRecord);
+                }
+            }
+
+            return resultSet;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public List<ShoppingCartRecord> readShoppingCart(String buyer) {
+        lock.readLock().lock();
+        try {
+            log.log(buyer, "read shoppingCart", "");
+            List<ShoppingCartRecord> shoppingcart = buyerCartMap.computeIfAbsent(buyer, k -> new ArrayList<>());
+            return shoppingcart;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public int BuyProduct(String seller, String buyer, String storeName, String productName, int quantity,
+                          double price) {
         lock.writeLock().lock();
         try {
             List<Store> stores = ownerStoresMap.get(seller);
@@ -449,7 +449,8 @@ public class MarketData implements IMarketData {
                             }
 
                             product.SetQuantity(product.getQuantity() - quantity);
-                            SaleRecord saleRecord = new SaleRecord(seller, storeName, productName, quantity, price);
+                            SaleRecord saleRecord = new SaleRecord(buyer, LocalDateTime.now(), seller, storeName,
+                                    productName, quantity, price);
                             salesRecordList.add(saleRecord);
                             saveData();
                         }
@@ -472,9 +473,34 @@ public class MarketData implements IMarketData {
 
             ShoppingCartRecord record = new ShoppingCartRecord(seller, storeName, productName, quantity, price);
             shoppingcart.add(record);
-            saveData();
+            saveShoppingCartData();
 
             return 0;
+        } finally {
+            lock.writeLock().unlock();
+        }
+
+    }
+
+
+    public int ShoppingCartCommit(String buyer)
+    {
+        lock.writeLock().lock();
+        int ret = 0;
+        try {
+            List<ShoppingCartRecord> shoppingcart = buyerCartMap.computeIfAbsent(buyer, k -> new ArrayList<>());
+            for(ShoppingCartRecord item: shoppingcart)
+            {
+                int r = BuyProduct(item.sellerName, buyer, item.storeName, item.productName, item.quantity, item.price);
+                if(r != 0)
+                {
+                    ret = r;
+                }
+            }
+            shoppingcart.clear();
+
+            saveData();
+            return ret;
         } finally {
             lock.writeLock().unlock();
         }
@@ -507,7 +533,7 @@ public class MarketData implements IMarketData {
             List<ShoppingCartRecord> shoppingCarts = buyerCartMap.get(entry.getKey());
             ownerJson.put("buyer", entry.getKey());
             ownerJson.put("shoppingcart", ShoppingCartRecord.ShoppingCartRecordsToJsonArray(shoppingCarts));
-            ownerList.add(ownerList);
+            ownerList.add(ownerJson);
         }
 
         try (FileWriter fileWriter = new FileWriter(SHOPPINGCART_DATA_FILE)) {
@@ -557,20 +583,31 @@ public class MarketData implements IMarketData {
             JSONArray jsonSales = (JSONArray) jsonParser.parse(reader);
             for (Object obj : jsonSales) {
                 JSONObject jSaleRecordObj = (JSONObject) obj;
-                String sellerName = (String) jSaleRecordObj.get("seller");
-                String storeName = (String) jSaleRecordObj.get("store");
-                String product = (String) jSaleRecordObj.get("product");
-                int quantity = ((Long) jSaleRecordObj.get("quantity")).intValue();
-                double price = (double) jSaleRecordObj.get("price");
+                String buyerName = (String) jSaleRecordObj.get("buyer");
+                String dateTimeString = (String) jSaleRecordObj.get("datetime");
+                try {
+                    //LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    String sellerName = (String) jSaleRecordObj.get("seller");
+                    String storeName = (String) jSaleRecordObj.get("store");
+                    String product = (String) jSaleRecordObj.get("product");
+                    int quantity = ((Long) jSaleRecordObj.get("quantity")).intValue();
+                    double price = (double) jSaleRecordObj.get("price");
 
-                SaleRecord saleRecord = new SaleRecord(sellerName, storeName, product, quantity, price);
-                salesRecordList.add(saleRecord);
+                    SaleRecord saleRecord = new SaleRecord(buyerName, null, sellerName, storeName, product, quantity,
+                            price);
+                    salesRecordList.add(saleRecord);
+                } catch (DateTimeParseException e) {
+                    System.err.println("Error parsing date-time string: " + dateTimeString);
+                    e.printStackTrace();
+                }
             }
         } catch (IOException | ParseException e) {
             // File does not exist or cannot be read, ignore and start with empty data
             log.log("sys", "loadSalesData", "failed");
+            e.printStackTrace();
         }
     }
+
 
     private void loadMarketData() {
         try {
@@ -624,7 +661,7 @@ public class MarketData implements IMarketData {
                 JSONObject jsonOwner = (JSONObject) obj;
                 String buyerName = (String) jsonOwner.get("buyer");
                 JSONArray jsoncartrecords = (JSONArray) jsonOwner.get("shoppingcart");
-                List<ShoppingCartRecord> shoppingCartrecords = new ArrayList<>();
+                List<ShoppingCartRecord> shoppingCartrecords = new ArrayList<>(); // Initialize the list
 
                 for (Object cartrecordobj : jsoncartrecords) {
                     JSONObject jCartrecordobj = (JSONObject) cartrecordobj;
@@ -644,9 +681,10 @@ public class MarketData implements IMarketData {
 
         } catch (IOException | ParseException e) {
             // File does not exist or cannot be read, ignore and start with empty data
-            log.log("sys", "loadMarketata", "failed");
+            log.log("sys", "loadShoppingCartData", "failed");
         }
     }
+
 
     private Store findStoreByName(List<Store> stores, String storeName) {
         for (Store store : stores) {
