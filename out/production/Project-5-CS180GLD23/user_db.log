@@ -101,3 +101,31 @@ User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
 User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
 User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
 User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: sys, Action: [save file], Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: sys, Action: [save file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: electronic store
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: electronic store
+User: sys, Action: [save file], Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: electronic store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: electronic store
+User: sys, Action: [save file], Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: food store
+User: sys, Action: [save file], Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: food store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: sys, Action: [save file], Message: 
