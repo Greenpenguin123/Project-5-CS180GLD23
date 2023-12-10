@@ -11,9 +11,6 @@ import java.util.Map;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import static javax.swing.JOptionPane.YES_NO_OPTION;
-import static javax.swing.JOptionPane.showConfirmDialog;
-
 // for server
 class ProductSeller {
     String name;
@@ -21,7 +18,7 @@ class ProductSeller {
     int quantity;
     double price;
 
-    public ProductSeller (String name, String description, int quantity, double price) {
+    public ProductSeller(String name, String description, int quantity, double price) {
         this.name = name;
         this.description = description;
         this.quantity = quantity;
@@ -102,9 +99,10 @@ public class SellerWnd extends JFrame {
         JButton addProductButton = new JButton("Add Product");
         JButton refreshProductButton = new JButton("Refresh ProductList");
         JButton deleteProductButton = new JButton("Delete Product");
-        JButton createStoreButton = new JButton("Create Store..");
-        JButton SignOutButton = new JButton("Sign Out");
+        JButton storeSaleRecordsButton = new JButton("Store sale records..");
+        JButton shoppingCartButton = new JButton("priducts in shopping Cart..");
 
+        JButton createStoreButton = new JButton("Create Store..");
 
         // Layout
         setLayout(new BorderLayout());
@@ -117,7 +115,7 @@ public class SellerWnd extends JFrame {
         JPanel productPanel = new JPanel(new BorderLayout());
         productPanel.add(new JScrollPane(productListTable), BorderLayout.CENTER);
 
-        JPanel formPanel = new JPanel(new GridLayout(6, 2));
+        JPanel formPanel = new JPanel(new GridLayout(7, 2));
         formPanel.add(new JLabel("Name:"));
         formPanel.add(productNameField);
         formPanel.add(new JLabel("Description:"));
@@ -129,16 +127,18 @@ public class SellerWnd extends JFrame {
         formPanel.add(addProductButton);
         formPanel.add(deleteProductButton);
         formPanel.add(refreshProductButton);
-        formPanel.add(SignOutButton);
+        formPanel.add(storeSaleRecordsButton);
+        formPanel.add(shoppingCartButton);
+
         productPanel.add(formPanel, BorderLayout.SOUTH);
 
         add(storePanel, BorderLayout.WEST);
         add(productPanel, BorderLayout.CENTER);
         // add(deleteProductButton, BorderLayout.SOUTH);
-        createStoreButton.addActionListener(e -> createStore());
-        SignOutButton.addActionListener(e -> SignOut());
 
-    // Listeners
+        createStoreButton.addActionListener(e -> createStore());
+
+        // Listeners
         storeList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 String selectedStoreName = storeList.getSelectedValue();
@@ -153,6 +153,10 @@ public class SellerWnd extends JFrame {
         refreshProductButton.addActionListener(e -> RefreshProduct());
 
         deleteProductButton.addActionListener(e -> deleteProduct());
+
+        storeSaleRecordsButton.addActionListener(e -> storesalesRecord());
+
+        shoppingCartButton.addActionListener(e -> storeShoppingCart());
 
         /*
          * storeComboBox.addActionListener(e -> {
@@ -204,7 +208,6 @@ public class SellerWnd extends JFrame {
 
             // Update the product table
             updateProductTable(storeName);
-            refreshStoreList();
         }
     }
 
@@ -214,15 +217,16 @@ public class SellerWnd extends JFrame {
         productQuantityField.setText("");
         productPriceField.setText("");
         /*
-        StoreSeller store = stores.get(storeName);
-        if (store != null) {
-            for (ProductSeller product : store) {
-                productNameField.setText(product.getName());
-                productDescField.setText(product.getDescription());
-                productQuantityField.setText(String.valueOf(product.getQuantityAvailable()));
-                productPriceField.setText(String.valueOf(product.getPrice()));
-            }
-        }*/
+         * StoreSeller store = stores.get(storeName);
+         * if (store != null) {
+         * for (ProductSeller product : store) {
+         * productNameField.setText(product.getName());
+         * productDescField.setText(product.getDescription());
+         * productQuantityField.setText(String.valueOf(product.getQuantityAvailable()));
+         * productPriceField.setText(String.valueOf(product.getPrice()));
+         * }
+         * }
+         */
     }
 
     private void addProduct() {
@@ -277,12 +281,31 @@ public class SellerWnd extends JFrame {
             }
         }
     }
-    private void SignOut() {
-        int response = showConfirmDialog(this, "Are you sure you want to sign out?", "Sign Out",
-                YES_NO_OPTION);
 
-        if (response == JOptionPane.YES_OPTION) {
-            dispose();
-        }
+    private void storesalesRecord() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                String storeName = storeList.getSelectedValue();
+                if (storeName != null) {
+
+                    StoreSaleRecordsWnd saleRecordsWnd = new StoreSaleRecordsWnd(SellerWnd.this, sellerName, storeName);
+                }
+            }
+        });
+    }
+
+    private void storeShoppingCart()
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                String storeName = storeList.getSelectedValue();
+                if (storeName != null) {
+
+                    StoreShoppingCartWnd saleRecordsWnd = new StoreShoppingCartWnd(SellerWnd.this, sellerName, storeName);
+                }
+            }
+        });
     }
 }

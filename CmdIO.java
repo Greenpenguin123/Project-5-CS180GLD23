@@ -11,8 +11,6 @@ import org.json.simple.parser.ParseException;
 
 import javax.swing.*;
 
-import static javax.swing.JOptionPane.*;
-
 public class CmdIO {
 
     static Socket clientSocket = null;
@@ -35,6 +33,12 @@ public class CmdIO {
     }
 
     static int Login(String user, String pwd, String userType) {
+        /*
+         * if (connect(serverAddress, serverPort) != 0) {
+         * return -1;
+         * }
+         */
+
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "login");
         jsonMessage.put("user", user);
@@ -272,6 +276,39 @@ public class CmdIO {
         return sales;
     }
 
+    static List<SaleRecordBuyer> searchStorePurchaseRecords(String seller, String store) {
+        List<SaleRecordBuyer> sales = new ArrayList<>();
+
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "storepurchaserecords");
+        jsonMessage.put("user", seller);
+        jsonMessage.put("store", store);
+
+        writer.println(jsonMessage.toJSONString());
+        try {
+            String serverResponse = reader.readLine();
+            System.out.println("serverResponse:" + serverResponse);
+
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            JSONArray jsonArray = (JSONArray) jsonObject.get("array");
+
+            for (Object obj : jsonArray) {
+                JSONObject jsonProduct = (JSONObject) obj;
+                String buyer = (String) jsonProduct.get("buyer");
+                String prodName = (String) jsonProduct.get("product");
+                String datetime = (String) jsonProduct.get("datetime");
+                int quantity = ((Long) jsonProduct.get("quantity")).intValue();
+                double price = (double) jsonProduct.get("price");
+
+                SaleRecordBuyer sale = new SaleRecordBuyer(buyer, datetime, seller, store, prodName, quantity, price);
+                sales.add(sale);
+            }
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+        return sales;
+    }
+
     static int purchaseProduct(String seller, String user, String storeName, String product, int quantity,
                                double price) {
         JSONObject jsonMessage = new JSONObject();
@@ -346,6 +383,33 @@ public class CmdIO {
         return -1;
     }
 
+    static int RemoveFromShoppingCart(String buyerName, String storeName, String sellerName, String productName,
+                                      int quantity, double price) {
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "removefromshoppingcart");
+        jsonMessage.put("user", buyerName);
+        jsonMessage.put("seller", sellerName);
+        jsonMessage.put("store", storeName);
+        jsonMessage.put("product", productName);
+        jsonMessage.put("quantity", quantity);
+        jsonMessage.put("price", price);
+
+        writer.println(jsonMessage.toJSONString());
+
+        try {
+            String serverResponse = reader.readLine();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            System.out.println("serverResponse:" + serverResponse);
+            int ret = ((Long) jsonObject.get("status")).intValue();
+            return ret;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return -1;
+    }
+
     static List<SaleRecordBuyer> ReadShoppingCart(String buyer) {
         List<SaleRecordBuyer> sales = new ArrayList<>();
 
@@ -378,35 +442,36 @@ public class CmdIO {
         return sales;
     }
 
-    static int ShoppingCartRemove(String buyer, String store, String productName, int quantity) {
+    static List<SaleRecordBuyer> ReadShoppingCartInStore(String seller, String store) {
+        List<SaleRecordBuyer> sales = new ArrayList<>();
 
         JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("req", "ShoppingCartRemove");
-        jsonMessage.put("user", buyer);
+        jsonMessage.put("req", "readshoppingcartinstore");
+        jsonMessage.put("user", seller);
         jsonMessage.put("store", store);
-        jsonMessage.put("productName", productName);
-        jsonMessage.put("quantity", quantity);
 
         writer.println(jsonMessage.toJSONString());
-
         try {
             String serverResponse = reader.readLine();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
             System.out.println("serverResponse:" + serverResponse);
-            int ret = ((Long) jsonObject.get("status")).intValue();
-            return ret;
+
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            JSONArray jsonArray = (JSONArray) jsonObject.get("array");
+
+            for (Object obj : jsonArray) {
+                JSONObject jsonProduct = (JSONObject) obj;
+                String buyer = (String) jsonProduct.get("buyer");
+                String prodName = (String) jsonProduct.get("product");
+                int quantity = ((Long) jsonProduct.get("quantity")).intValue();
+                double price = (double) jsonProduct.get("price");
+
+                SaleRecordBuyer sale = new SaleRecordBuyer(buyer, null, seller, store, prodName, quantity, price);
+                sales.add(sale);
+            }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
-            // Handle exceptions appropriately based on your application's requirements
         }
-        return -1;
+        return sales;
     }
 
 }
-
-
-
-
-
-
-

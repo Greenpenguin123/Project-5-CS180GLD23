@@ -10,7 +10,7 @@ import java.util.Map;
 
 
 public class MarketClient extends JFrame {
-   
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             LoginWnd marketSystemGUI = new LoginWnd();

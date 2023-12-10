@@ -1,13 +1,8 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import java.util.ArrayList;
 import java.util.List;
 
-//public class BuyerRecordWnd extends JFrame {
 public class BuyerRecordWnd extends JDialog {
     private DefaultTableModel tableModel;
     private JTable table;
@@ -21,13 +16,7 @@ public class BuyerRecordWnd extends JDialog {
         initialize();
 
     }
-    /*public BuyerRecordWnd(String buyer) {
 
-        this.setTitle("Pruchase history for:" + buyer);
-        this.buyerName = buyer;
-        initialize();
-    }
-*/
     private void initialize() {
         // Create a table model with columns: datetime, seller, store product, quantity,
         // price

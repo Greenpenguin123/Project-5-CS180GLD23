@@ -3,7 +3,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-
 import java.io.*;
 import java.net.*;
 import java.util.List;
@@ -20,7 +19,8 @@ public class SaleRecord {
     public int quantity;
     public double price;
 
-    public SaleRecord(String buyer, LocalDateTime datetime, String sellerName, String storeName, String productName, int quantity, double price) {
+    public SaleRecord(String buyer, LocalDateTime datetime, String sellerName, String storeName, String productName,
+                      int quantity, double price) {
         this.buyer = buyer;
         this.datetime = datetime;
         this.sellerName = sellerName;
@@ -36,7 +36,11 @@ public class SaleRecord {
         for (SaleRecord saleRecord : saleRecords) {
             JSONObject salesJson = new JSONObject();
             salesJson.put("buyer", saleRecord.buyer);
-            salesJson.put("datetime", saleRecord.datetime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            if (saleRecord.datetime == null) {
+                salesJson.put("datetime", "");
+            } else {
+                salesJson.put("datetime", saleRecord.datetime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            }
             salesJson.put("seller", saleRecord.sellerName);
             salesJson.put("store", saleRecord.storeName);
             salesJson.put("product", saleRecord.productName);

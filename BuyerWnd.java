@@ -3,7 +3,19 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import java.util.ArrayList;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,8 +24,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import static javax.swing.JOptionPane.*;
 
 class BrowseProduct {
     public String seller;
@@ -61,17 +71,11 @@ public class BuyerWnd extends JFrame {
     private JTextField searchField;
 
     private String buyerName;
+    TableRowSorter<TableModel> sorter;
 
     public BuyerWnd(String buyerName) {
 
         this.buyerName = buyerName;
-
-        // products.add(new ProductForBuyer("Laptop", "Powerful laptop with high
-        // performance", 10, 1200.0));
-        // products.add(new ProductForBuyer("Smartphone", "Latest smartphone with
-        // amazing features", 20, 800.0));
-        // products.add(new ProductForBuyer("Headphones", "Noise-canceling headphones
-        // for immersive experience", 15, 150.0));
 
         tableModel = new DefaultTableModel(
                 new Object[] { "Seller", "Store", "Product", "Description", "Quantity", "Price" }, 0) {
@@ -81,6 +85,9 @@ public class BuyerWnd extends JFrame {
             }
         };
         table = new JTable(tableModel);
+        sorter = new TableRowSorter<>(tableModel);
+        table.setRowSorter(sorter);
+
         ListSelectionModel selectionModel = table.getSelectionModel();
         selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         // updateTable();
@@ -130,14 +137,6 @@ public class BuyerWnd extends JFrame {
             }
         });
 
-        JButton SignOut = new JButton("Sign Out");
-        SignOut.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SignOut();
-            }
-        });
-
         JPanel searchPanel = new JPanel();
         searchPanel.add(new JLabel("Search: "));
         searchPanel.add(searchField);
@@ -148,12 +147,39 @@ public class BuyerWnd extends JFrame {
         buttonPanel.add(purchaseRecordButton);
         buttonPanel.add(AddToShoppingCartButton);
         buttonPanel.add(GoToShoppingCartButton);
-        buttonPanel.add(SignOut);
+
+        JRadioButton sortQuantity = new JRadioButton("Quantity");
+        JRadioButton sortPrice = new JRadioButton("Price");
+        JLabel selectedLabel = new JLabel("Sort on: ");
+        JPanel radiobuttonPanel = new JPanel();
+        radiobuttonPanel.add(selectedLabel);
+        radiobuttonPanel.add(sortQuantity);
+        radiobuttonPanel.add(sortPrice);
+
+        ButtonGroup sortGroup = new ButtonGroup();
+        sortGroup.add(sortQuantity);
+        sortGroup.add(sortPrice);
+
+        ActionListener radioListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JRadioButton selectedRadioButton = (JRadioButton) e.getSource();
+                TableSort(selectedRadioButton.getText());
+            }
+        };
+
+        sortQuantity.addActionListener(radioListener);
+        sortPrice.addActionListener(radioListener);
+
+        JPanel buttonPanel2 = new JPanel();
+        buttonPanel2.add(radiobuttonPanel, BorderLayout.NORTH);
+        buttonPanel2.add(buttonPanel, BorderLayout.SOUTH);
+        buttonPanel2.setLayout(new BoxLayout(buttonPanel2, BoxLayout.Y_AXIS));
 
         setLayout(new BorderLayout());
         add(searchPanel, BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        add(buttonPanel2, BorderLayout.SOUTH);
 
         setTitle("Buyer: " + buyerName);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -189,7 +215,7 @@ public class BuyerWnd extends JFrame {
         int quantityBought = 0;
         if (selectedRow != -1) {
             // Implement the logic for buying the product
-            String inputText = showInputDialog(null, "Please enter number of purrchase items:");
+            String inputText = JOptionPane.showInputDialog(null, "Please enter number of purrchase items:");
 
             try {
                 // Convert the input text to an integer
@@ -200,8 +226,8 @@ public class BuyerWnd extends JFrame {
             } catch (NumberFormatException | NullPointerException ex) {
                 // Handle the case where the input is not a valid integer or the user cancels
                 // the input
-                showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
-                        ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             String seller = (String) table.getValueAt(selectedRow, 0);
@@ -210,18 +236,18 @@ public class BuyerWnd extends JFrame {
             double price = (double) table.getValueAt(selectedRow, 5);
             int ret = CmdIO.purchaseProduct(seller, buyerName, storeName, productName, quantityBought, price);
             if (ret == 0) {
-                showMessageDialog(null, "Purchase successful!", "Purchase Success",
-                        INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Purchase successful!", "Purchase Success",
+                        JOptionPane.INFORMATION_MESSAGE);
                 searchProducts();
             } else {
-                showMessageDialog(null, "Purchase Failed!", "Purchase Failed", WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Purchase Failed!", "Purchase Failed", JOptionPane.WARNING_MESSAGE);
 
             }
 
         } else {
             // Show a message if no product is selected
-            showMessageDialog(this, "Please select a product to buy.", "No Product Selected",
-                    WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a product to buy.", "No Product Selected",
+                    JOptionPane.WARNING_MESSAGE);
         }
 
     }
@@ -231,13 +257,13 @@ public class BuyerWnd extends JFrame {
             @Override
             public void run() {
                 BuyerRecordWnd buyhistoryWnd = new BuyerRecordWnd(parent, buyerName);
-
-                 buyhistoryWnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                 buyhistoryWnd.setLocationRelativeTo(null); // Center on screen
-                 buyhistoryWnd.setModalExclusionType(Dialog.ModalExclusionType.
-                 TOOLKIT_EXCLUDE.APPLICATION_EXCLUDE);
-                 buyhistoryWnd.setVisible(true);
-
+                /*
+                 * buyhistoryWnd.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                 * buyhistoryWnd.setLocationRelativeTo(null); // Center on screen
+                 * buyhistoryWnd.setModalExclusionType(Dialog.ModalExclusionType.
+                 * APPLICATION_EXCLUDE);
+                 * buyhistoryWnd.setVisible(true);
+                 */
             }
         });
     }
@@ -247,25 +273,25 @@ public class BuyerWnd extends JFrame {
         int quantityBought = 0;
         if (selectedRow != -1) {
             // Implement the logic for buying the product
-            String inputText = showInputDialog(null, "Please enter number of itms:");
+            String inputText = JOptionPane.showInputDialog(null, "Please enter number of itms:");
 
             try {
                 // Convert the input text to an integer
                 quantityBought = Integer.parseInt(inputText);
                 // Process the integer value as needed
-                showMessageDialog(null, "You added: " + quantityBought + " items to Shopping Cart",
-                        "Success", INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "You added: " + quantityBought + " items to Shopping Cart",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (NumberFormatException | NullPointerException ex) {
                 // Handle the case where the input is not a valid integer or the user cancels
                 // the input
-                showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
-                        ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (quantityBought <= 0) {
-                showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
-                        ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             String seller = (String) table.getValueAt(selectedRow, 0);
@@ -275,12 +301,12 @@ public class BuyerWnd extends JFrame {
 
             int ret = CmdIO.AddtoShoppingCart(buyerName, storeName, seller, productName, quantityBought, price);
             if (ret == 0) {
-                showMessageDialog(null, "Purchase added successfully!", "Added to Cart Successfully",
-                        INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Purchase added successfully!", "Added to Cart Successfully",
+                        JOptionPane.INFORMATION_MESSAGE);
                 searchProducts();
             } else {
-                showMessageDialog(null, "Purchase added failed!", "Added to Cart Unsuccessful",
-                        WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Purchase added failed!", "Added to Cart Unsuccessful",
+                        JOptionPane.WARNING_MESSAGE);
 
             }
 
@@ -302,12 +328,20 @@ public class BuyerWnd extends JFrame {
             }
         });
     }
-    private void SignOut() {
-        int response = showConfirmDialog(this, "Are you sure you want to sign out?", "Sign Out",
-            YES_NO_OPTION);
 
-        if (response == JOptionPane.YES_OPTION) {
-            dispose();
+    private void TableSort(String sort) {
+        int columnIndex = 4;
+        if (sort.equals("Quantity")) {
+            columnIndex = 4;
+        } else {
+            columnIndex = 5; // Index of the "Age" column
         }
+        sorter.setComparator(columnIndex, Comparator.naturalOrder());
+        sorter.toggleSortOrder(columnIndex);
+
     }
+
 }
+
+//public class BuyerRecordWnd extends JFrame {
+

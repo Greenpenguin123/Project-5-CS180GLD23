@@ -4,7 +4,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -401,6 +400,7 @@ public class MarketData implements IMarketData {
         }
     }
 
+    @Override
     public List<SaleRecord> querybuyerPurchaseRecords(String buyer) {
         // salesRecordList
         List<SaleRecord> resultSet = new ArrayList<>();
@@ -420,6 +420,7 @@ public class MarketData implements IMarketData {
         }
     }
 
+    @Override
     public List<ShoppingCartRecord> readShoppingCart(String buyer) {
         lock.readLock().lock();
         try {
@@ -431,8 +432,35 @@ public class MarketData implements IMarketData {
         }
     }
 
+    @Override
+    public List<SaleRecord> readShoppingCartInStore(String seller, String store) {
+        lock.readLock().lock();
+
+        try {
+            log.log(seller, "read shoppingCart for store", store);
+            List<SaleRecord> shoppingcart = new ArrayList<>();
+            JSONArray ownerList = new JSONArray();
+            for (Map.Entry<String, List<ShoppingCartRecord>> entry : buyerCartMap.entrySet()) {
+                String buyer = entry.getKey();
+                List<ShoppingCartRecord> shoppingCarts = buyerCartMap.get(entry.getKey());
+                for(ShoppingCartRecord item : shoppingCarts){
+                    if(item.sellerName.equals(seller) && item.storeName.equals(store))
+                    {
+                        SaleRecord rcd = new SaleRecord(buyer, null, seller, store, item.productName, item.quantity, item.price);
+                        shoppingcart.add(rcd);
+                    }
+                }
+            }
+            return shoppingcart;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
     public int BuyProduct(String seller, String buyer, String storeName, String productName, int quantity,
                           double price) {
+        log.log(buyer, "buy product", productName);
         lock.writeLock().lock();
         try {
             List<Store> stores = ownerStoresMap.get(seller);
@@ -461,11 +489,13 @@ public class MarketData implements IMarketData {
         } finally {
             lock.writeLock().unlock();
         }
+
     }
 
     @Override
     public int AddShoppingCart(String buyer, String seller, String storeName, String productName, int quantity,
                                double price) {
+        log.log(buyer, "AddShoppingCart", productName);
         lock.writeLock().lock();
         try {
             List<ShoppingCartRecord> shoppingcart = buyerCartMap.computeIfAbsent(buyer, k -> new ArrayList<>());
@@ -478,21 +508,46 @@ public class MarketData implements IMarketData {
         } finally {
             lock.writeLock().unlock();
         }
-
     }
 
+    public int removeproductShoppingCart(String buyer, String seller, String storeName, String productName,
+                                         int quantity,
+                                         double price) {
+        log.log(buyer, "removeproductShoppingCart", productName);
+        lock.writeLock().lock();
+        try {
+            List<ShoppingCartRecord> shoppingcart = buyerCartMap.computeIfAbsent(buyer, k -> new ArrayList<>());
+            ShoppingCartRecord selected = null;
+            for (ShoppingCartRecord item : shoppingcart) {
+                if (item.sellerName.equals(seller) &&
+                        item.storeName.equals(storeName) &&
+                        item.productName.equals(productName) &&
+                        item.quantity == quantity &&
+                        item.price == price) {
+                    selected = item;
+                    break;
+                }
+            }
 
-    public int ShoppingCartCommit(String buyer)
-    {
+            if (selected != null) {
+                shoppingcart.remove(selected);
+                saveShoppingCartData();
+            }
+            return 0;
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    @Override
+    public int ShoppingCartCommit(String buyer) {
         lock.writeLock().lock();
         int ret = 0;
         try {
             List<ShoppingCartRecord> shoppingcart = buyerCartMap.computeIfAbsent(buyer, k -> new ArrayList<>());
-            for(ShoppingCartRecord item: shoppingcart)
-            {
+            for (ShoppingCartRecord item : shoppingcart) {
                 int r = BuyProduct(item.sellerName, buyer, item.storeName, item.productName, item.quantity, item.price);
-                if(r != 0)
-                {
+                if (r != 0) {
                     ret = r;
                 }
             }
@@ -505,56 +560,25 @@ public class MarketData implements IMarketData {
         }
 
     }
-    public int ShoppingCartRemove(String buyer, String storeName, String productName, int quantityRemoved) {
-        lock.writeLock().lock();
+
+    @Override
+    public List<SaleRecord> querystorePurchaseRecords(String seller, String store) {
+        List<SaleRecord> resultSet = new ArrayList<>();
+        lock.readLock().lock();
         try {
-            List<ShoppingCartRecord> shoppingCart = buyerCartMap.computeIfAbsent(buyer, k -> new ArrayList<>());
-
-            for (ShoppingCartRecord cartRecord : shoppingCart) {
-                if (cartRecord.storeName.equals(storeName) && cartRecord.productName.equals(productName)) {
-                    // Found the matching record in the shopping cart
-                    if (cartRecord.quantity < quantityRemoved) {
-                        // If the requested quantity is more than what is in the cart, return an error
-                        return -5;
-                    }
-
-                    // Update the quantity in the shopping cart
-                    cartRecord.quantity -= quantityRemoved;
-
-                    // Find the corresponding store and product in the owner's map
-                    List<Store> stores = ownerStoresMap.get(cartRecord.sellerName);
-                    if (stores != null) {
-                        for (Store store : stores) {
-                            if (store.getName().equals(storeName)) {
-                                for (ProductMarketPlace product : store.getProducts()) {
-                                    if (product.getName().equals(productName)) {
-                                        // Increase the quantity of the product in the store
-                                        product.setQuantity(product.getQuantity() + quantityRemoved);
-
-                                        // If the quantity in the cart becomes zero, remove the record
-                                        if (cartRecord.quantity == 0) {
-                                            shoppingCart.remove(cartRecord);
-                                        }
-
-                                        // Save the updated data
-                                        saveData();
-
-                                        return 0;
-                                    }
-                                }
-                            }
-                        }
-                    }
+            log.log(seller, "store purchase history", "");
+            for (SaleRecord saleRecord : salesRecordList) {
+                if (saleRecord.sellerName.equals(seller) &&
+                        saleRecord.storeName.equals(store)) {
+                    resultSet.add(saleRecord);
                 }
             }
 
-            // If the specified product is not found in the shopping cart
-            return -7;
+            return resultSet;
         } finally {
-            lock.writeLock().unlock();
+            lock.readLock().unlock();
         }
     }
-
 
     private void saveMarketData() {
         JSONArray ownerList = new JSONArray();
@@ -634,34 +658,22 @@ public class MarketData implements IMarketData {
                 JSONObject jSaleRecordObj = (JSONObject) obj;
                 String buyerName = (String) jSaleRecordObj.get("buyer");
                 String dateTimeString = (String) jSaleRecordObj.get("datetime");
-                if (dateTimeString != null) {
-                    try {
-                        LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                        String sellerName = (String) jSaleRecordObj.get("seller");
-                        String storeName = (String) jSaleRecordObj.get("store");
-                        String product = (String) jSaleRecordObj.get("product");
-                        int quantity = ((Long) jSaleRecordObj.get("quantity")).intValue();
-                        double price = (double) jSaleRecordObj.get("price");
+                LocalDateTime dateTime = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                String sellerName = (String) jSaleRecordObj.get("seller");
+                String storeName = (String) jSaleRecordObj.get("store");
+                String product = (String) jSaleRecordObj.get("product");
+                int quantity = ((Long) jSaleRecordObj.get("quantity")).intValue();
+                double price = (double) jSaleRecordObj.get("price");
 
-                        SaleRecord saleRecord = new SaleRecord(buyerName, dateTime, sellerName, storeName, product, quantity, price);
-                        salesRecordList.add(saleRecord);
-                    } catch (DateTimeParseException e) {
-                        System.err.println("Error parsing date-time string: " + dateTimeString);
-                        e.printStackTrace();
-                    }
-                } else {
-                    System.err.println("DateTime string is null.");
-                    // Handle the situation where dateTimeString is null.
-                }
+                SaleRecord saleRecord = new SaleRecord(buyerName, dateTime, sellerName, storeName, product, quantity,
+                        price);
+                salesRecordList.add(saleRecord);
             }
         } catch (IOException | ParseException e) {
             // File does not exist or cannot be read, ignore and start with empty data
             log.log("sys", "loadSalesData", "failed");
-            e.printStackTrace();
         }
     }
-
-
 
     private void loadMarketData() {
         try {
@@ -715,7 +727,7 @@ public class MarketData implements IMarketData {
                 JSONObject jsonOwner = (JSONObject) obj;
                 String buyerName = (String) jsonOwner.get("buyer");
                 JSONArray jsoncartrecords = (JSONArray) jsonOwner.get("shoppingcart");
-                List<ShoppingCartRecord> shoppingCartrecords = new ArrayList<>(); // Initialize the list
+                List<ShoppingCartRecord> shoppingCartrecords = new ArrayList<>();
 
                 for (Object cartrecordobj : jsoncartrecords) {
                     JSONObject jCartrecordobj = (JSONObject) cartrecordobj;
@@ -735,10 +747,9 @@ public class MarketData implements IMarketData {
 
         } catch (IOException | ParseException e) {
             // File does not exist or cannot be read, ignore and start with empty data
-            log.log("sys", "loadShoppingCartData", "failed");
+            log.log("sys", "loadMarketata", "failed");
         }
     }
-
 
     private Store findStoreByName(List<Store> stores, String storeName) {
         for (Store store : stores) {

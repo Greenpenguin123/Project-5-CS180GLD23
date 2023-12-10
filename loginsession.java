@@ -54,6 +54,15 @@ public class loginsession {
             return;
         }
 
+        if (reqVal.equals("storepurchaserecords")) {
+            String store = req.get("store");
+            List<SaleRecord> result = marketData.querystorePurchaseRecords(usrVal, store);
+            ReturnSaleRecordArray(result, out);
+
+            return;
+        }
+
+
         if (reqVal.equals("addstore")) {
             String store = req.get("store");
             int err = marketData.AddStore(usrVal, store);
@@ -122,25 +131,37 @@ public class loginsession {
             ReturnResult(err, err == 0 ? "Adding to Shopping Cart Succeeded" : "Adding to Shopping Cart failed", out);
         }
 
+        if (reqVal.equals("removefromshoppingcart")) {
+            String buyer = req.get("user");
+            String seller = req.get("seller");
+            String storeName = req.get("store");
+            String productName = req.get("product");
+            int quantity = req.get_int("quantity");
+            double price = req.get_double("price");
+            int err = marketData.removeproductShoppingCart(buyer, seller, storeName, productName, quantity, price);
+
+            ReturnResult(err, err == 0 ? "Adding to Shopping Cart Succeeded" : "Adding to Shopping Cart failed", out);
+        }
+
         if (reqVal.equals("readshoppingcart")) {
             List<ShoppingCartRecord> result = marketData.readShoppingCart(usrVal);
             ReturnShoppingCart(result, out);
+            return;
         }
+
+        if (reqVal.equals("readshoppingcartinstore")) {
+            String store = req.get("store");
+
+            List<SaleRecord> result = marketData.readShoppingCartInStore(usrVal, store);
+            ReturnShoppingCartForStore(result, out);
+            return;
+        }
+
 
         if (reqVal.equals("shoppingcartbuy")) {
             int err = marketData.ShoppingCartCommit(usrVal);
             ReturnResult(err, err == 0 ? "Commit Shopping Cart Succeeded" : "Commit Shopping Cart failed:" + err, out);
-        }
-
-        if (reqVal.equals("ShoppingCartRemove")) {
-            String buyer = req.get("user");
-            String storeName = req.get("store");
-            String productName = req.get("productName");
-            int quantityRemoved = Integer.parseInt(req.get("quantity"));
-
-            int err = marketData.ShoppingCartRemove(buyer, storeName, productName, quantityRemoved);
-
-            ReturnResult(err, err == 0 ? "Removing Product from Cart Success" : "Removing Product from Cart Failed", out);
+            return;
         }
 
 
@@ -188,4 +209,15 @@ public class loginsession {
 
         out.println(jsonMessage.toJSONString());
     }
+
+    private void ReturnShoppingCartForStore(List<SaleRecord> sashoppingCart, PrintWriter out) {
+        JSONArray jarray = SaleRecord.salesToJsonArray(sashoppingCart);
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("type", "shoppingcart");
+        jsonMessage.put("array", jarray);
+
+        out.println(jsonMessage.toJSONString());
+    }
+
+
 }
