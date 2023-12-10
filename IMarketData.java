@@ -23,4 +23,5 @@ public interface IMarketData{
     //List<productBrowseResult> ShoppingCart(String buyer);
     int AddShoppingCart(String buyer, String seller, String storeName, String productName, int quantity, double price);
     int ShoppingCartCommit(String buyer);
+    int ShoppingCartRemove(String buyer, String storeName, String productName, int quantityRemoved);
 }

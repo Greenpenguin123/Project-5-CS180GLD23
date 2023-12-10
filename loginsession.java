@@ -132,6 +132,17 @@ public class loginsession {
             ReturnResult(err, err == 0 ? "Commit Shopping Cart Succeeded" : "Commit Shopping Cart failed:" + err, out);
         }
 
+        if (reqVal.equals("ShoppingCartRemove")) {
+            String buyer = req.get("user");
+            String storeName = req.get("store");
+            String productName = req.get("productName");
+            int quantityRemoved = Integer.parseInt(req.get("quantity"));
+
+            int err = marketData.ShoppingCartRemove(buyer, storeName, productName, quantityRemoved);
+
+            ReturnResult(err, err == 0 ? "Removing Product from Cart Success" : "Removing Product from Cart Failed", out);
+        }
+
 
     }
 

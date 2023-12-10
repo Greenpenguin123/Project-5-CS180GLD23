@@ -461,7 +461,6 @@ public class MarketData implements IMarketData {
         } finally {
             lock.writeLock().unlock();
         }
-
     }
 
     @Override
@@ -506,6 +505,56 @@ public class MarketData implements IMarketData {
         }
 
     }
+    public int ShoppingCartRemove(String buyer, String storeName, String productName, int quantityRemoved) {
+        lock.writeLock().lock();
+        try {
+            List<ShoppingCartRecord> shoppingCart = buyerCartMap.computeIfAbsent(buyer, k -> new ArrayList<>());
+
+            for (ShoppingCartRecord cartRecord : shoppingCart) {
+                if (cartRecord.storeName.equals(storeName) && cartRecord.productName.equals(productName)) {
+                    // Found the matching record in the shopping cart
+                    if (cartRecord.quantity < quantityRemoved) {
+                        // If the requested quantity is more than what is in the cart, return an error
+                        return -5;
+                    }
+
+                    // Update the quantity in the shopping cart
+                    cartRecord.quantity -= quantityRemoved;
+
+                    // Find the corresponding store and product in the owner's map
+                    List<Store> stores = ownerStoresMap.get(cartRecord.sellerName);
+                    if (stores != null) {
+                        for (Store store : stores) {
+                            if (store.getName().equals(storeName)) {
+                                for (ProductMarketPlace product : store.getProducts()) {
+                                    if (product.getName().equals(productName)) {
+                                        // Increase the quantity of the product in the store
+                                        product.setQuantity(product.getQuantity() + quantityRemoved);
+
+                                        // If the quantity in the cart becomes zero, remove the record
+                                        if (cartRecord.quantity == 0) {
+                                            shoppingCart.remove(cartRecord);
+                                        }
+
+                                        // Save the updated data
+                                        saveData();
+
+                                        return 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // If the specified product is not found in the shopping cart
+            return -7;
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
 
     private void saveMarketData() {
         JSONArray ownerList = new JSONArray();

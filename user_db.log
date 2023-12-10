@@ -261,3 +261,223 @@ User: sys, Action: [save sales file], Message:
 User: sys, Action: [save shoppingcart file], Message: 
 User: qwer@gmail.com, Action: List Store Pruducts, Message: QWER store
 User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: electronic store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: food store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASD
+User: buyer, Action: Search Pruducts, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: RemoveProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: RemoveProd:FindStore, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: food store
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: ASDF
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: buyer, Action: Search Pruducts, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: electronic store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: shirt store
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASD
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: ASD
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASD
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: ASDF
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASD
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: food store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: electronic store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: Store1
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: RemoveProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: RemoveProd:FindStore, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: electronic store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: food store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: food store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASD
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store2
+User: asdf@gmail.com, Action: List Store Pruducts, Message: store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: electronic store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: food store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: shirt store
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASD
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: buyer, Action: Search Pruducts, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: AddProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: AddProd:FindStore, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: RemoveProd:GetStores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: RemoveProd:FindStore, Message: Store1
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: buyer, Action: Search Pruducts, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: buyer, Action: Search Pruducts, Message: mystore
+User: buyer, Action: Search Pruducts, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: , Action: [login], Message: User not found or incorrect credentials
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 

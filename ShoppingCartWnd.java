@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.swing.JOptionPane.*;
+
 //public class BuyerRecordWnd extends JFrame {
 public class ShoppingCartWnd extends JDialog {
     private DefaultTableModel tableModel;
@@ -56,15 +58,16 @@ public class ShoppingCartWnd extends JDialog {
         });
 
         JButton RemoveButton = new JButton("Remove");
-        BuyButton.addActionListener(new ActionListener() {
+        RemoveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                Remove();
             }
         });
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(BuyButton);
+        buttonPanel.add(RemoveButton);
 
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -97,5 +100,33 @@ public class ShoppingCartWnd extends JDialog {
         int ret = CmdIO.ShoppingCartBuy(buyerName);
         JOptionPane.showMessageDialog(this, "Purchase " + (ret == 0 ? "succeed" : "failed:" + ret));
         ReadShoppingCart();
+    }
+
+    private void Remove() {
+        int selectedRow = table.getSelectedRow();
+        int quantityRemoved = 0;
+        if (selectedRow != -1) {
+            // Implement the logic for buying the product
+            String inputText = showInputDialog(null, "Please enter number of items that you want removed: ");
+
+            try {
+                // Convert the input text to an integer
+                quantityRemoved = Integer.parseInt(inputText);
+                // Process the integer value as needed
+                // JOptionPane.showMessageDialog(null, "You purchased: " + quantityBought + "
+                // items.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } catch (NumberFormatException | NullPointerException ex) {
+                // Handle the case where the input is not a valid integer or the user cancels
+                // the input
+                showMessageDialog(null, "Invalid input. Please enter a valid integer.", "Error",
+                        ERROR_MESSAGE);
+                return;
+            }
+            String storeName = (String) table.getValueAt(selectedRow, 1);
+            String productName = (String) table.getValueAt(selectedRow, 2);
+        int ret = CmdIO.ShoppingCartRemove(buyerName, storeName,  productName, quantityRemoved);
+        JOptionPane.showMessageDialog(this, "Purchase " + (ret == 0 ? "remove succeed" : "remove failed:" + ret));
+        ReadShoppingCart();
+    }
     }
 }

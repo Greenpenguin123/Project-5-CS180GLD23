@@ -11,6 +11,8 @@ import org.json.simple.parser.ParseException;
 
 import javax.swing.*;
 
+import static javax.swing.JOptionPane.*;
+
 public class CmdIO {
 
     static Socket clientSocket = null;
@@ -296,8 +298,7 @@ public class CmdIO {
         return -1;
     }
 
-    static int ShoppingCartBuy(String buyer)
-    {
+    static int ShoppingCartBuy(String buyer) {
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "shoppingcartbuy");
         jsonMessage.put("user", buyer);
@@ -377,4 +378,35 @@ public class CmdIO {
         return sales;
     }
 
+    static int ShoppingCartRemove(String buyer, String store, String productName, int quantity) {
+
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("req", "ShoppingCartRemove");
+        jsonMessage.put("user", buyer);
+        jsonMessage.put("store", store);
+        jsonMessage.put("productName", productName);
+        jsonMessage.put("quantity", quantity);
+
+        writer.println(jsonMessage.toJSONString());
+
+        try {
+            String serverResponse = reader.readLine();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(serverResponse);
+            System.out.println("serverResponse:" + serverResponse);
+            int ret = ((Long) jsonObject.get("status")).intValue();
+            return ret;
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+            // Handle exceptions appropriately based on your application's requirements
+        }
+        return -1;
+    }
+
 }
+
+
+
+
+
+
+
