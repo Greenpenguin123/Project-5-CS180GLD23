@@ -509,3 +509,6 @@ User: asdf@gmail.com, Action: List Store Pruducts, Message: ASD
 User: asdf@gmail.com, Action: store purchase history, Message: 
 User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
 User: asdf@gmail.com, Action: read shoppingCart for store, Message: ASDF
+User: localhost@gmail.com, Action: [login], Message: User not found or incorrect credentials
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 

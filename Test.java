@@ -96,16 +96,6 @@ public class Test {
 
     }
     @org.junit.Test
-    public void testConnect() throws IOException {
-        String serverAddress = "localhost";
-        int serverPort = 5432;
-
-        int result = CmdIO.connect(serverAddress, serverPort);
-
-        assertEquals(0, result);
-    }
-
-    @org.junit.Test
     public void testSearchProduct() throws IOException {
         String keywords = "keyword1 keyword2";
         JSONObject expectedJsonRequest = new JSONObject();

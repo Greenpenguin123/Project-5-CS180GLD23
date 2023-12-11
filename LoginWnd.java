@@ -33,7 +33,7 @@ public class LoginWnd extends JFrame {
         ButtonGroup userTypeGroup = new ButtonGroup();
         userTypeGroup.add(sellerRadioButton);
         userTypeGroup.add(buyerRadioButton);
-        userTypeGroup.add(buyerLocalButton);
+        //userTypeGroup.add(buyerLocalButton);
 
         JButton loginButton = new JButton("Login");
         JButton createAccountButton = new JButton("Create New Account");
@@ -54,8 +54,8 @@ public class LoginWnd extends JFrame {
         add(sellerRadioButton);
         add(new JLabel()); // Empty label for spacing
         add(buyerRadioButton);
-        add(new JLabel());
-        add(buyerLocalButton);
+        //add(new JLabel());
+        //add(buyerLocalButton);
 
         add(createAccountButton);
         add(loginButton);
