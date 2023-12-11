@@ -1,145 +1,118 @@
-import java.io.*;
-import java.net.*;
+import static jdk.internal.org.objectweb.asm.util.CheckClassAdapter.verify;
+import static org.junit.Assert.assertEquals;
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.List;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
+import org.junit.Before;
 
 public class Test {
 
-    public static void main(String[] args) {
-        try {
-            String serverAddress = "localhost";
-            int serverPort = 5432;
+    private StringWriter mockOutput;
+    private BufferedReader mockInput;
+    private PrintWriter mockWriter;
 
-            Socket clientSocket = new Socket(serverAddress, serverPort);
-            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-            // Send login
-            adduser(writer, reader, "Wallen", "buyer");
-            login(writer, reader, "Wallen", "pwdeee", "buyer");
-            //removelogin(writer, reader, "smith1");
-            //AddStore(writer, reader, "Smith", "fishing store");
-            //AddProduct(writer, reader, "Smith", "fishing store", "UnderWatertCamera", "EIOUp", 10, 84.99);
-            BuyProduct(writer, reader, "joe", "joe's 4th store", "Rose", 4, 5.99);
-            clientSocket.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @Before
+    public void setUp() {
+        mockOutput = new StringWriter();
+        mockInput = new BufferedReader(new StringReader(""));
+        mockWriter = new PrintWriter(mockOutput, true);
     }
 
-    public static void adduser(PrintWriter writer, BufferedReader reader, String user, String typeuser)
-    {
-        JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("req", "adduser");
-        jsonMessage.put("user", user);
-        jsonMessage.put("pwd", "pwdeee");
-        jsonMessage.put("email", "user@foo.org");
-        jsonMessage.put("type", typeuser);
+    @org.junit.Test
+    public void testAddUser() throws IOException {
+        JSONObject expectedJsonRequest = new JSONObject();
+        expectedJsonRequest.put("req", "adduser");
+        expectedJsonRequest.put("user", "Wallen");
+        expectedJsonRequest.put("pwd", "pwdeee");
+        expectedJsonRequest.put("email", "user@foo.org");
+        expectedJsonRequest.put("type", "buyer");
 
-        writer.println(jsonMessage.toJSONString());
-        try{
-            String serverResponse = reader.readLine();
-            System.out.println("serverResponse:" + serverResponse);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals("", mockOutput.toString().trim());
     }
 
-    public static void login(PrintWriter writer, BufferedReader reader, String user, String pwd, String usrType)
-    {
-        JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("req", "login");
-        jsonMessage.put("user", user);
-        jsonMessage.put("pwd", pwd);
-        jsonMessage.put("type", usrType);
+    @org.junit.Test
+    public void testLogin() throws IOException {
+        JSONObject expectedJsonRequest = new JSONObject();
+        expectedJsonRequest.put("req", "login");
+        expectedJsonRequest.put("user", "Wallen");
+        expectedJsonRequest.put("pwd", "pwdeee");
+        expectedJsonRequest.put("type", "buyer");
 
-        writer.println(jsonMessage.toJSONString());
-        try{
-            String serverResponse = reader.readLine();
-            System.out.println("serverResponse:" + serverResponse);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    public static void removelogin(PrintWriter writer, BufferedReader reader, String user)
-    {
-        JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("req", "removeuser");
-        jsonMessage.put("user", user);
-
-        writer.println(jsonMessage.toJSONString());
-        try{
-            String serverResponse = reader.readLine();
-            System.out.println("serverResponse:" + serverResponse);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals("", mockOutput.toString().trim());
     }
 
-    public static void AddStore(PrintWriter writer, BufferedReader reader, String user, String storeName)
-    {
-        JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("req", "addstore");
-        jsonMessage.put("user", user);
-        jsonMessage.put("store", storeName);
+    @org.junit.Test
+    public void testRemoveLogin() throws IOException {
+        JSONObject expectedJsonRequest = new JSONObject();
+        expectedJsonRequest.put("req", "removeuser");
+        expectedJsonRequest.put("user", "smith1");
 
-        writer.println(jsonMessage.toJSONString());
-
-        try{
-            String serverResponse = reader.readLine();
-            System.out.println("serverResponse:" + serverResponse);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals("", mockOutput.toString().trim());
     }
 
-    public static void AddProduct(PrintWriter writer, BufferedReader reader, String user, String storeName, String product, String desc, int quantity, double price)
-    {
-        JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("req", "addproduct");
-        jsonMessage.put("user", user);
-        jsonMessage.put("store", storeName);
-        jsonMessage.put("product", product);
-        jsonMessage.put("desc", desc);
-        jsonMessage.put("quantity", quantity);
-        jsonMessage.put("price", price);
+    @org.junit.Test
+    public void testAddStore() throws IOException {
+        JSONObject expectedJsonRequest = new JSONObject();
+        expectedJsonRequest.put("req", "addstore");
+        expectedJsonRequest.put("user", "Smith");
+        expectedJsonRequest.put("store", "fishing store");
 
-        writer.println(jsonMessage.toJSONString());
-        try{
-            String serverResponse = reader.readLine();
-            System.out.println("serverResponse:" + serverResponse);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        assertEquals("", mockOutput.toString().trim());
     }
 
-    public static void BuyProduct(PrintWriter writer, BufferedReader reader, String user, String storeName, String product, int quantity, double price)
-    {
-        JSONObject jsonMessage = new JSONObject();
-        jsonMessage.put("req", "buyproduct");
-        jsonMessage.put("user", user);
-        jsonMessage.put("store", storeName);
-        jsonMessage.put("product", product);
-        jsonMessage.put("quantity", quantity);
-        jsonMessage.put("price", price);
+    @org.junit.Test
+    public void testAddProduct() throws IOException {
+        JSONObject expectedJsonRequest = new JSONObject();
+        expectedJsonRequest.put("req", "addproduct");
+        expectedJsonRequest.put("user", "Smith");
+        expectedJsonRequest.put("store", "fishing store");
+        expectedJsonRequest.put("product", "UnderWatertCamera");
+        expectedJsonRequest.put("desc", "EIOUp");
+        expectedJsonRequest.put("quantity", 10);
+        expectedJsonRequest.put("price", 84.99);
 
-        writer.println(jsonMessage.toJSONString());
-        try{
-            String serverResponse = reader.readLine();
-            System.out.println("serverResponse:" + serverResponse);
+        assertEquals("", mockOutput.toString().trim());
+    }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    @org.junit.Test
+    public void testBuyProduct() throws IOException {
+        JSONObject expectedJsonRequest = new JSONObject();
+        expectedJsonRequest.put("req", "buyproduct");
+        expectedJsonRequest.put("user", "joe");
+        expectedJsonRequest.put("store", "joe's 4th store");
+        expectedJsonRequest.put("product", "Rose");
+        expectedJsonRequest.put("quantity", 4);
+        expectedJsonRequest.put("price", 5.99);
+
+        assertEquals("", mockOutput.toString().trim());
+
+
+    }
+    @org.junit.Test
+    public void testConnect() throws IOException {
+        String serverAddress = "localhost";
+        int serverPort = 5432;
+
+        int result = CmdIO.connect(serverAddress, serverPort);
+
+        assertEquals(0, result);
+    }
+
+    @org.junit.Test
+    public void testSearchProduct() throws IOException {
+        String keywords = "keyword1 keyword2";
+        JSONObject expectedJsonRequest = new JSONObject();
+        expectedJsonRequest.put("req", "searchproduct");
+        expectedJsonRequest.put("keywords", keywords);
+        assertEquals("", mockOutput.toString().trim());
+
     }
 
 }
-

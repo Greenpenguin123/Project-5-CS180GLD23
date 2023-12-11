@@ -481,3 +481,31 @@ User: , Action: [login], Message: User not found or incorrect credentials
 User: buyer, Action: Search Pruducts, Message: 
 User: asdf@gmail.com, Action: read shoppingCart, Message: 
 User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: AddShoppingCart, Message: ASSDF shoes
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: AddShoppingCart, Message: sketcher
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: removeproductShoppingCart, Message: Not Sure Shirt
+User: sys, Action: [save shoppingcart file], Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: asdf@gmail.com, Action: buy product, Message: sketcher
+User: sys, Action: [save file], Message: 
+User: sys, Action: [save sales file], Message: 
+User: sys, Action: [save shoppingcart file], Message: 
+User: buyer, Action: Search Pruducts, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: purchase history, Message: 
+User: asdf@gmail.com, Action: List Stores, Message: asdf@gmail.com
+User: asdf@gmail.com, Action: List Store Pruducts, Message: Store1
+User: asdf@gmail.com, Action: store purchase history, Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASD
+User: asdf@gmail.com, Action: store purchase history, Message: 
+User: asdf@gmail.com, Action: List Store Pruducts, Message: ASDF
+User: asdf@gmail.com, Action: read shoppingCart for store, Message: ASDF
