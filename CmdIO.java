@@ -62,12 +62,6 @@ public class CmdIO {
     }
 
     static int AddLogin(String user, String pwd, String userType) {
-        /*
-         * if (connect(serverAddress, serverPort) != 0) {
-         * return -1;
-         * }
-         */
-
         JSONObject jsonMessage = new JSONObject();
         jsonMessage.put("req", "adduser");
         jsonMessage.put("user", user);
