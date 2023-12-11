@@ -136,6 +136,8 @@ public class BuyerWnd extends JFrame {
 
             }
         });
+        JButton signOutButton = new JButton("Sign Out");
+        signOutButton.addActionListener(e -> dispose());
 
         JPanel searchPanel = new JPanel();
         searchPanel.add(new JLabel("Search: "));
@@ -147,6 +149,7 @@ public class BuyerWnd extends JFrame {
         buttonPanel.add(purchaseRecordButton);
         buttonPanel.add(AddToShoppingCartButton);
         buttonPanel.add(GoToShoppingCartButton);
+        buttonPanel.add(signOutButton);
 
         JRadioButton sortQuantity = new JRadioButton("Quantity");
         JRadioButton sortPrice = new JRadioButton("Price");
