@@ -101,7 +101,7 @@ public class SellerWnd extends JFrame {
         JButton deleteProductButton = new JButton("Delete Product");
         JButton storeSaleRecordsButton = new JButton("Store sale records..");
         JButton shoppingCartButton = new JButton("Products in Shopping Cart..");
-
+        JButton signOutButton = new JButton("Sign Out");
         JButton createStoreButton = new JButton("Create Store..");
 
         // Layout
@@ -129,6 +129,7 @@ public class SellerWnd extends JFrame {
         formPanel.add(refreshProductButton);
         formPanel.add(storeSaleRecordsButton);
         formPanel.add(shoppingCartButton);
+        formPanel.add(signOutButton);
 
         productPanel.add(formPanel, BorderLayout.SOUTH);
 
@@ -157,6 +158,8 @@ public class SellerWnd extends JFrame {
         storeSaleRecordsButton.addActionListener(e -> storesalesRecord());
 
         shoppingCartButton.addActionListener(e -> storeShoppingCart());
+
+        signOutButton.addActionListener(e -> dispose());
 
         /*
          * storeComboBox.addActionListener(e -> {
