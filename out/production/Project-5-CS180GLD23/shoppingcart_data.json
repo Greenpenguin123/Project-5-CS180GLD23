@@ -1,1 +1,1 @@
-[{"shoppingcart":[{"seller":"qwer@gmail.com","product":"Fan","quantity":12,"price":12.0,"store":"QWER store"}],"buyer":"asdf@gmail.com"}]
+[{"shoppingcart":[{"seller":"qwer@gmail.com","product":"Fan","quantity":12,"price":12.0,"store":"QWER store"},{"seller":"asdf@gmail.com","product":"Not Sure Shirt","quantity":12,"price":200.0,"store":"ASD"}],"buyer":"asdf@gmail.com"}]
