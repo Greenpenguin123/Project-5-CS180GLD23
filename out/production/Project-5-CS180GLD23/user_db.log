@@ -480,3 +480,4 @@ User: asdf@gmail.com, Action: read shoppingCart, Message:
 User: , Action: [login], Message: User not found or incorrect credentials
 User: buyer, Action: Search Pruducts, Message: 
 User: asdf@gmail.com, Action: read shoppingCart, Message: 
+User: asdf@gmail.com, Action: read shoppingCart, Message: 

@@ -100,7 +100,7 @@ public class SellerWnd extends JFrame {
         JButton refreshProductButton = new JButton("Refresh ProductList");
         JButton deleteProductButton = new JButton("Delete Product");
         JButton storeSaleRecordsButton = new JButton("Store sale records..");
-        JButton shoppingCartButton = new JButton("priducts in shopping Cart..");
+        JButton shoppingCartButton = new JButton("Products in Shopping Cart..");
 
         JButton createStoreButton = new JButton("Create Store..");
 

@@ -118,7 +118,7 @@ public class BuyerWnd extends JFrame {
             }
         });
 
-        JButton GoToShoppingCartButton = new JButton("Goto Shopping Cart..");
+        JButton GoToShoppingCartButton = new JButton("Go to Shopping Cart..");
         GoToShoppingCartButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -215,7 +215,7 @@ public class BuyerWnd extends JFrame {
         int quantityBought = 0;
         if (selectedRow != -1) {
             // Implement the logic for buying the product
-            String inputText = JOptionPane.showInputDialog(null, "Please enter number of purrchase items:");
+            String inputText = JOptionPane.showInputDialog(null, "Please enter number of items to be purchased:");
 
             try {
                 // Convert the input text to an integer
