@@ -11,14 +11,15 @@ Server code github: https://github.com/Greenpenguin123/ServerCode
 
 ## Project 5 Code
 # Hello, Welcome to Project-5-CS180GLD23, AKA P4 Marketplace!
-### This project was completed by Andrew Lin, Sameer Murthy, Noelle Medrano, and Aathman Bhavaraju
+### This project was completed by Andrew Lin, Sameer Murthy, Noelle Medrano
 
 ##### How to Compile/Run P4 Marketplace
 Our main User Interface code is contained in UserAccountManager, so simply "running" that class will start the marketplace correctly.
 
 ##### Sumbission
 Andrew Lin is our Project Manager and submitted the Vocareum workspace.
-Noelle Medrano sumbitted the Report on Brightspace.
+Noelle Medrano sumbitted the Presenation on Brightspace with a link to a youtube Video.
+Sameer Murthy submitted the Project Report on Brightspace
 
 ### Buyer/Customer User Interface
 ###### All classes and methods described below are used/functional primarily in the buyer/customer section of the program
