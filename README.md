@@ -20,7 +20,7 @@ To run this code, start MarketServer.java, and then start MarketClient.java whic
 
 ##### Sumbission
 Andrew Lin is our Project Manager and submitted the Vocareum workspace.
-Noelle Medrano sumbitted the Presenation on Brightspace with a link to a youtube Video.
+Noelle Medrano submitted the presentation on Brightspace with a link to a YouTube video.
 Sameer Murthy submitted the Project Report on Brightspace
 
 ### Documentation for code: https://docs.google.com/document/d/1VwJPnu6EoOC6sgGOipcFLa_z__7mVPm_PjU88PE-jEw/edit?usp=sharing
